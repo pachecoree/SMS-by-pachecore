@@ -39,6 +39,13 @@
 				$ctrl -> run();
 				break;
 
+			case 'student':
+				#Load student controller
+				require('Controllers/studentCtrl.php');
+				$ctrl = new studentCtrl();
+				$ctrl -> run();
+				break;
+
 			default:
 				#Controller was not valid
 				echo 'Controller ',$_GET['ctrl'],' is not valid';

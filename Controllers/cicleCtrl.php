@@ -10,16 +10,9 @@ class cicleCtrl {
 		#Create the errors object 
 		require('Views/errors.php');
 		$this -> errors = new errors();
-	}
-
-	function validate_cicle($cicle) {
-		#Check if format was correctly input
-		$pattern = '/^[2][0-9]{3}[a-z]$/i';
-		if (preg_match($pattern,$cicle) == 1) {
-			return true;
-		}
-		#Cicle format is incorrect
-		return false;
+		#Create the validation object 
+		require('Controllers/validationCtrl.php');
+		$this -> validation = new validationCtrl();
 	}
 
 	function run() {
@@ -30,7 +23,7 @@ class cicleCtrl {
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
 						#Validate if cicle is correct
-						if ($this -> validate_cicle($_GET['cicle'])) {
+						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
 							#The cicle format is correct
 							#The cicle begin and end dates and the non working days will be selected
 							

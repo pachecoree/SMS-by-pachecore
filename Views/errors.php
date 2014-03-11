@@ -10,6 +10,10 @@ class errors {
 		echo 'Could not add "',$cicle,'" cicle';
 	}
 
+	function error_add_student($fullname) {
+		echo 'Could not add "',$fullname,'" ';
+	}
+
 	function not_found_input($input) {
 		#Recieves the input and displays the error
 		echo 'Could not find "',$input,'"';

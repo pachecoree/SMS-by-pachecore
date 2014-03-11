@@ -6,46 +6,9 @@ class courseCtrl {
 		#Create errors object
 		require('Views/errors.php');
 		$this -> errors = new errors();
-	}
-
-	function validate_nrc($nrc) {
-		#Check if format was correctly input
-		$pattern = '/^[0-9]{5}$/';
-		if (preg_match($pattern,$nrc) == 1) {
-			return true;
-		}	
-		#NRC format is not valid
-		return false;
-	}
-
-	function validate_cicle($cicle) {
-		#Check if format was correctly input
-		$pattern = '/^[2][0-9]{3}[a-z]$/i';
-		if (preg_match($pattern,$cicle) == 1) {
-			return true;
-		}
-		#Cicle format is not valid
-		return false;
-	}
-
-	function validate_section($section) {
-		#Check if format was correctly input
-		$pattern = '/^d[0-9]{2}$/i';
-		if (preg_match($pattern, $section) == 1) {
-			return true;
-		}
-		#Section format is not valid
-		return false;
-	}
-
-	function validate_subject($subject) {
-		#Check if format was correctly input
-		$pattern = '/^[a-z ]{1,}$/i';
-		if (preg_match($pattern,$subject) == 1) {
-			return true;
-		}
-		#Subject name is not valid
-		return false;
+		#Create the validation object
+		require('Controllers/validationCtrl.php');
+		$this -> validation = new validationCtrl();
 	}
 
 	function run() {
@@ -56,19 +19,19 @@ class courseCtrl {
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
 						#Validate if cicle is correct
-						if ($this -> validate_cicle($_GET['cicle'])) {
+						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
 							#Check if the subject name exists
 							if (isset($_GET['nombre'])) {
 								#Validate if the subject name is valid
-								if ($this -> validate_subject($_GET['nombre'])) {
+								if ($this -> validation -> validate_subject($_GET['nombre'])) {
 									#Check if the NRC exists
 									if (isset($_GET['nrc'])) {
 										#Validate if the nrc is valid
-										if ($this -> validate_nrc($_GET['nrc'])) {
+										if ($this -> validation -> validate_nrc($_GET['nrc'])) {
 											#Check if section exists
 											if (isset($_GET['seccion'])) {
 												#Validate if the section is correct
-												if ($this -> validate_section($_GET['seccion'])) {
+												if ($this -> validation -> validate_section($_GET['seccion'])) {
 													#All the course data has been validated correctly 
 													#Get the model
 													require('Models/courseMdl.php');
@@ -85,6 +48,7 @@ class courseCtrl {
 														require('Views/courseview.php');
 													}
 													else {
+														#Error adding course
 														$this -> errors -> error_add_course($_GET['nombre']);
 													}
 												}
@@ -133,15 +97,15 @@ class courseCtrl {
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
 						#Validate if cicle is correct
-						if ($this -> validate_cicle($_GET['cicle'])) {
+						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
 							#Check if the subject name exists
 								if (isset($_GET['nrc'])) {
 									#Validate if the nrc is valid
-									if ($this -> validate_nrc($_GET['nrc'])) {
+									if ($this -> validation -> validate_nrc($_GET['nrc'])) {
 										#Check if section exists
 										if (isset($_GET['seccion'])) {
 											#Validate if the section is correct
-											if ($this -> validate_section($_GET['seccion'])) {
+											if ($this -> validation -> validate_section($_GET['seccion'])) {
 												#All the course data has been validated correctly 
 												#Get the model
 												require('Models/courseMdl.php');
@@ -157,6 +121,7 @@ class courseCtrl {
 													require('Views/courseview.php');
 												}
 												else {
+													#Error adding course
 													$this -> errors -> error_add_course($_GET['nombre']);
 												}
 											}
