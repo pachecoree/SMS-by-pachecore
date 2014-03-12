@@ -10,6 +10,9 @@ class errors {
 		echo 'Could not add "',$cicle,'" cicle';
 	}
 
+	function error_add_field($field) {
+		echo 'Could not add "',$field,'" field to course';
+	}
 	function error_add_student($fullname) {
 		echo 'Could not add "',$fullname,'" ';
 	}

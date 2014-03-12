@@ -37,6 +37,14 @@ class courseMdl {
 		$course[] = array ("codigo" => 210519152, "nombre" => "Villanueva Venegas Luis Guillermo","calificacion" => "7.3");
 		return $course;
 	}
+
+	function add_field_to_course($field_info) {
+		#Go to the DB and get the course info
+		#Validate percentage value is accepted by getting percentage total and adding the new one , and making sure its equal or less than 100
+		#Then proceed to the insertion of the new field
+		#Return true the field was succesfully added , or false if it failed
+		return true;
+	}
 }
 
 ?>

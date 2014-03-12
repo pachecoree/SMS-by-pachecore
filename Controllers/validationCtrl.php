@@ -46,6 +46,26 @@ class validationCtrl {
 		return false;
 	}
 
+	function validate_percentage($percentage) {
+		#Check if format was correctly input
+		$pattern = '/(^[1-9]$)|(^[1-9][0-9]$)|(^100$)/';
+		if (preg_match($pattern,$percentage) == 1) {
+			return true;
+		}
+		#Percetange value is not valid
+		return false;
+	}
+
+	function validate_field($field) {
+		#Check if format was correctly input
+		$pattern = '/^[1-9 a-z]{1,}$/i';
+		if (preg_match($pattern,$field) == 1) {
+			return true;
+		}
+		#Field value is not valid
+		return false;
+	}
+
 	function validate_phonenumber($phonenumber) {
 		#Check if format was correctly input
 		$pattern = '/^33([0-9]{2}){4}$/';

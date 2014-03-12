@@ -261,6 +261,72 @@ class courseCtrl {
 						$this -> errors -> not_found_input('Course ID');
 					}
 					break;
+
+				case 'addfield':
+					#Check if course exists
+					if (isset($_GET['courseid'])) {
+						#Check if Course ID is valid
+						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+							#Check Field exists
+							if (isset($_GET['field'])) {
+								#Check if Field is valid
+								if ($this -> validation -> validate_field($_GET['field'])) {
+									#Check if percentage exists
+									if (isset($_GET['percentage'])) {
+										#Check if percentage is valid
+										if ($this -> validation -> validate_percentage($_GET['percentage'])) {
+											#Get the model
+											require('Models/courseMdl.php');
+											#Create the model object
+											$mdl_obj = new courseMdl();
+											#Create array to send to the add field function
+											$field_array = array ("idcurso" => $_GET['courseid'],
+																  "rubro" => $_GET['field'],
+																  "porcentaje" => $_GET['percentage']);
+											$mdl_return_value = $mdl_obj -> add_field_to_course($field_array);
+											if ($mdl_return_value) {
+												#Field was added to Course
+												#Get the view
+												require('Views/field_added_courseview.php');
+											}
+											else {
+												#Could not add field to course
+												$this -> errors ->  error_add_field($_GET['courseid']);
+											}
+										}
+										else {
+											#Percetange is not valid
+											$this -> errors -> not_valid_format($_GET['percentage'],'percentage');
+										}
+									}
+									else {
+										#Percentage was not input
+										$this -> errors -> not_found_input('percentage');
+									}
+								}
+								else {
+									#Field is not valid
+									$this -> errors -> not_valid_format($_GET['field'],'Field');
+								}
+							}
+							else {
+								#Field was not input
+								$this -> errors -> not_found_input('Field');
+							}
+						}
+						else {
+							#Course ID is not valid
+							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+						}
+					}
+					else {
+						#Course was not input
+						$this -> errors -> not_found_input('Course ID');
+					}
+ 					break;
+
+ 				case 'capture':
+ 					break;
 				default:
 					#Activity is not valid
 					$this -> errors -> not_valid_input($_GET['act'],'Activity');
