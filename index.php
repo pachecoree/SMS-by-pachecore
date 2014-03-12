@@ -37,6 +37,7 @@
 				require('Controllers/courseCtrl.php');
 				$ctrl = new courseCtrl();
 				$ctrl -> run();
+				
 				break;
 
 			case 'student':

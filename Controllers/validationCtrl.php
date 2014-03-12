@@ -106,6 +106,16 @@ class validationCtrl {
 		#github Account is not valid
 		return false;
 	}
+
+	function validate_courseid($courseid) {
+		#Check if format was correctly input
+		$pattern = '/^[0-9]{1,6}$/';
+		if (preg_match($pattern,$courseid) == 1) {
+			return true;
+		}
+		#github Account is not valid
+		return false;
+	}
 }
 
 
