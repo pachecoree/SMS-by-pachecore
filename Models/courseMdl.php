@@ -38,11 +38,19 @@ class courseMdl {
 		return $course;
 	}
 
-	function add_field_to_course($field_info) {
+	function add_field_to_course($field_array) {
 		#Go to the DB and get the course info
 		#Validate percentage value is accepted by getting percentage total and adding the new one , and making sure its equal or less than 100
 		#Then proceed to the insertion of the new field
 		#Return true the field was succesfully added , or false if it failed
+		return true;
+	}
+
+	function add_grade_to_field($field_array) {
+		#Go to the DB and get the course's and student's info
+		#Add the grade to the field of the student's course
+		#Return true the grade was succesfully captured , or false if it failed
+
 		return true;
 	}
 }

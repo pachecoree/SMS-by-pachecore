@@ -21,6 +21,10 @@ class errors {
 		echo 'Could not add Student: ',$fullname ,' to Course';	
 	}
 
+	function error_capture_grade() {
+		echo 'Error capturing grade';
+	}
+
 	function error_query_list($course) {
 		echo 'Could not find course "',$course,'"';
 	}

@@ -46,6 +46,16 @@ class validationCtrl {
 		return false;
 	}
 
+	function validate_grade($grade) {
+		#Check if format was correctly input
+		$pattern = '/(^[0-9]([.][0-9]){0,1}$)|^10$/';
+		if (preg_match($pattern,$grade) == 1) {
+			return true;
+		}
+		#Percetange value is not valid
+		return false;
+	}
+
 	function validate_percentage($percentage) {
 		#Check if format was correctly input
 		$pattern = '/(^[1-9]$)|(^[1-9][0-9]$)|(^100$)/';

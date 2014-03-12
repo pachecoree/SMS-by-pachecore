@@ -326,7 +326,81 @@ class courseCtrl {
  					break;
 
  				case 'capture':
+ 					#Check if Student ID exists
+ 					if (isset($_GET['studentid'])) {
+ 						#Validate if Student ID 
+ 						if ($this -> validation -> validate_sid($_GET['studentid'])) {
+ 							#Check if field exists
+ 							if (isset($_GET['field'])) {
+ 								#Validate Field
+ 								if ($this -> validation -> validate_field($_GET['field'])) {
+ 									#Check if grade exists
+ 									if (isset($_GET['grade'])) {
+ 										#Validate grade
+ 										if ($this -> validation -> validate_grade($_GET['grade'])) {
+ 											#Check if Course ID exists
+ 											if (isset($_GET['courseid'])) {
+ 												#Validate if Course ID is correct
+ 												if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+ 													#Get the model
+ 													require('Models/courseMdl.php');
+ 													#Create the model object
+ 													$mdl_obj = new courseMdl();
+ 													#Create array to send to the add field function
+													$field_array = array ("codigo" => $_GET['studentid'],
+																		  "rubro" => $_GET['field'],
+																		  "calificacion" => $_GET['grade']);
+													$mdl_return_value = $mdl_obj -> add_grade_to_field($field_array);
+													if ($mdl_return_value) {
+														#Get the view
+														require('Views/capture_gradeview.php');
+													}
+													else {
+														#Failed to capture grade
+														$this -> errors -> error_capture_grade();
+													}
+ 												}
+ 												else {
+ 													#Course ID is not valid
+ 													$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+ 												}
+ 											}
+ 											else {
+ 												#Course ID was not iput
+ 												$this -> errors -> not_found_input('Course ID');
+ 											}
+ 										}
+ 										else {
+ 											#Grade is not valid
+ 											$this -> errors -> not_valid_format($_GET['grade'],'Grade');
+ 										}
+ 									}
+ 									else {
+ 										#Grade was not input
+ 										$this -> errors -> not_found_input('Grade');
+ 									}
+ 								}
+ 								else {
+ 									#Field is not valid
+ 									$this -> errors -> not_valid_format($_GET['field'],'Field');
+ 								}
+ 							}
+ 							else {
+ 								#Field was not input
+ 								$this -> errors -> not_found_input('Field');
+ 							}
+ 						}
+ 						else {
+ 							#Student ID is not valid
+ 							$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+ 						}
+ 					}
+ 					else {
+ 						#Student ID was not input
+ 						$this -> errors -> not_found_input('Student ID');
+ 					}
  					break;
+
 				default:
 					#Activity is not valid
 					$this -> errors -> not_valid_input($_GET['act'],'Activity');
