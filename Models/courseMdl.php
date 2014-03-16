@@ -72,6 +72,16 @@ class courseMdl {
 		$sheet_array['section'] = 'D01';
 		return $sheet_array;
 	}
+
+	function check_studentsid($studentids_array,$courseid) {
+		$return_array = array();
+		foreach ($studentids_array as $key => $studentid) {
+			#Go to the DB ad check if student is in course
+			#If found, add to return_array
+			$return_array[] = $studentid;
+		}
+		return $return_array;
+	}
 }
 
 ?>

@@ -91,6 +91,17 @@ class validationCtrl {
 		return false;
 	}
 
+	function validate_attendance($value) {
+		if (strcmp(strtolower($value), 'asistencia') == 0) {
+			return 1;
+		}
+		if (strcmp(strtolower($value),'falta') == 0) {
+			return 0;
+		}
+		#Not valid value
+		return 2;
+	}
+
 	function validate_field($field) {
 		#Check if format was correctly input
 		$pattern = '/^[1-9 a-z]{1,}$/i';

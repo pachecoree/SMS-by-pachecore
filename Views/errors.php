@@ -10,6 +10,10 @@ class errors {
 		echo 'Could not add sheet';
 	}
 
+	function notstudents_att() {
+		echo 'No students attendance registries were modified';
+	}
+
 	function error_add_cicle($cicle) {
 		echo 'Could not add "',$cicle,'" cicle';
 	}

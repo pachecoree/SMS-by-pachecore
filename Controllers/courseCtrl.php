@@ -391,8 +391,8 @@ class courseCtrl {
  								}
  							}
  							else {
- 								#Course ID was not input
-			 					$this -> errors -> not_found_input('Course ID');
+ 								#Field was not input
+			 					$this -> errors -> not_found_input('Field');
  							}
  						}
  						else {
@@ -405,6 +405,69 @@ class courseCtrl {
 	 					$this -> errors -> not_found_input('Course ID');
  					}
  					break;
+
+ 				case 'attendance':
+ 					#Check if Course ID exists
+ 					if (isset($_GET['courseid'])) {
+ 						#Validate Course ID
+ 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+ 							#Check if Value exists
+ 							if (isset($_GET['value'])) {
+ 								#Validate value
+ 								if ($this -> validation -> validate_attendance($_GET['value']) != 2) {
+ 									$value = $this -> validation -> validate_attendance($_GET['value']);
+ 									#Check if Student ID exists, can be more than one
+ 									if (isset($_GET['studentid'])) {
+ 										#Get the model
+ 										require('Models/courseMdl.php');
+ 										#Create the Model object
+ 										$mdl_obj = new courseMdl();
+ 										#Validated Student's ID
+ 										$studentsid_aray = array();
+ 										foreach ($_GET['studentid'] as $key => $SID) {
+ 											if ($this -> validation -> validate_sid($SID))
+ 												$studentsid_aray[] = $SID;
+ 										}
+ 										#Found Students
+ 										$studentsid_aray = $mdl_obj -> check_studentsid($studentsid_aray,$_GET['courseid']);
+ 										if (sizeof($studentsid_aray) == 0) {
+ 											#No students found from student's ID
+ 											$this -> errors -> notstudents_att();
+ 											return;
+ 										}
+ 										if ($value == 1) {
+ 											require('Views/attendance_putview.php');
+ 										}
+ 										else if ($value == 0) {
+ 											require('Views/attendance_removeview.php');
+ 										}
+ 										return;
+ 									}
+ 									else {
+ 										#Students ID where not input
+ 										$this -> errors -> not_found_input('Student(s) ID');
+ 									}
+ 								}
+ 								else {
+ 									#Value is not valid
+ 									$this -> errors -> not_valid_format($_GET['value'],'Value');
+ 								}
+ 							}	
+ 							else {
+ 								#Value was not input
+ 								$this -> errors -> not_found_input('Value');
+ 							}
+ 						}
+ 						else {
+ 							#Course ID is not valid
+ 							$this -> errors ->not_valid_format($_GET['courseid'],'Course ID');
+ 						}
+ 					}
+ 					else {
+ 						#Course ID was not input
+ 						$this -> errors -> not_found_input('Course ID');
+ 					}
+ 					break;	
 
  				case 'capture':
  					#Check if Student ID exists
