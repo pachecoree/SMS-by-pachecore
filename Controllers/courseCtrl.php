@@ -21,40 +21,71 @@ class courseCtrl {
 						#Validate if cicle is correct
 						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
 							#Check if the subject name exists
-							if (isset($_GET['nombre'])) {
+							if (isset($_GET['subject'])) {
 								#Validate if the subject name is valid
-								if ($this -> validation -> validate_subject($_GET['nombre'])) {
+								if ($this -> validation -> validate_subject($_GET['subject'])) {
 									#Check if the NRC exists
 									if (isset($_GET['nrc'])) {
 										#Validate if the nrc is valid
 										if ($this -> validation -> validate_nrc($_GET['nrc'])) {
 											#Check if section exists
-											if (isset($_GET['seccion'])) {
+											if (isset($_GET['section'])) {
 												#Validate if the section is correct
-												if ($this -> validation -> validate_section($_GET['seccion'])) {
-													#All the course data has been validated correctly 
-													#Get the model
-													require('Models/courseMdl.php');
-													#Create the course array and set the values
-													$course_array = array( "subject" => $_GET['nombre'],
-															     		"cicle" => $_GET['cicle'],
-																 	    "section" => $_GET['seccion'],
-																		"nrc" => $_GET['nrc']);
-													#Create the Model object
-													$course_obj = new courseMdl();
-													#Callback to the add function, sending the array created as a parameter
-													if ($course_obj -> add_course($course_array)) {
-														#Get the view
-														require('Views/courseview.php');
+												if ($this -> validation -> validate_section($_GET['section'])) {
+													#Check if the course schedule is correct
+													#Check if course days and hours exists
+													if (isset($_GET['days']) && isset($_GET['hours']) && isset($_GET['schedule'])) {
+														if ($this -> validation -> validate_schedule($_GET['days'],$_GET['hours'],$_GET['schedule'])) {
+															#All the course data has been validated correctly 
+															#Get the model
+															require('Models/courseMdl.php');
+															#Create the course array and set the values
+															$course_array = array( "subject" => $_GET['subject'],
+																		     		"cicle" => $_GET['cicle'],
+																			 	    "section" => $_GET['section'],
+																					"nrc" => $_GET['nrc']);
+															#Separate days elements and add them to course array
+															foreach ($_GET['days'] as $key => $value) {
+																$aux_array[] = $value;
+															}
+															$course_array['days'] = $aux_array;
+															$aux_array = array();
+															#Separate hours elements and add them to course array
+															foreach ($_GET['hours'] as $key => $value) {
+																$aux_array[] = $value;
+															}
+															$course_array['hours'] = $aux_array;
+															$aux_array = array();
+															#Separate schedule elements and add them to course array
+															foreach ($_GET['schedule'] as $key => $value) {
+																$aux_array[] = $value;
+															}
+															$course_array['schedule'] = $aux_array;
+															#Create the Model object
+															$course_obj = new courseMdl();
+															#Callback to the add function, sending the array created as a parameter
+															if ($course_obj -> add_course($course_array)) {
+																#Get the view
+																require('Views/courseview.php');
+															}
+															else {
+																#Error adding course
+																$this -> errors -> error_add_course($_GET['subject']);
+															}
+														}
+														else {
+															#Class schedule is incorrect
+															$this -> errors -> not_valid_schedule();
+														}
 													}
 													else {
-														#Error adding course
-														$this -> errors -> error_add_course($_GET['nombre']);
+														#Class schedule is incorrect
+														$this -> errors -> not_valid_schedule();
 													}
 												}
 												else {
 													#Section is not valid
-													$this -> errors -> not_valid_format($_GET['seccion'],'Section');
+													$this -> errors -> not_valid_format($_GET['section'],'Section');
 												}
 											}
 											else {
@@ -74,7 +105,7 @@ class courseCtrl {
 								}
 								else {
 									#Subject name is not valid
-									$this -> errors -> not_valid_format($_GET['nombre'],'Subject Name');
+									$this -> errors -> not_valid_format($_GET['subject'],'Subject Name');
 								}
 							}
 							else {
@@ -103,16 +134,20 @@ class courseCtrl {
 									#Validate if the nrc is valid
 									if ($this -> validation -> validate_nrc($_GET['nrc'])) {
 										#Check if section exists
-										if (isset($_GET['seccion'])) {
+										if (isset($_GET['section'])) {
 											#Validate if the section is correct
-											if ($this -> validation -> validate_section($_GET['seccion'])) {
+											if ($this -> validation -> validate_section($_GET['section'])) {
 												#All the course data has been validated correctly 
 												#Get the model
 												require('Models/courseMdl.php');
 												#Create the course array and set the values
 												$course_array = array( "cicle" => $_GET['cicle'],
-															 	       "section" => $_GET['seccion'],
+															 	       "section" => $_GET['section'],
 																	   "nrc" => $_GET['nrc']);
+												$course_array['subject'] = 'Matematicas II';
+												$course_array['days'] = array('1','3','5');
+												$course_array['hours'] = array('2','2','1');
+												$course_array['schedule'] = array('1100:1255','1100:1255','1100:1155');
 												#Create the Model object
 												$course_obj = new courseMdl();
 												#Callback to the add function, sending the array created as a parameter
@@ -127,7 +162,7 @@ class courseCtrl {
 											}
 											else {
 												#Section is not valid
-												$this -> errors -> not_valid_format($_GET['seccion'],'Section');
+												$this -> errors -> not_valid_format($_GET['section'],'Section');
 											}
 										}
 										else {
@@ -214,7 +249,7 @@ class courseCtrl {
 					}
 					break;
 
-				case 'add':
+				case 'addstudent':
 					#Check if course exists
 					if (isset($_GET['courseid'])) {
 						#Validate Course
@@ -227,7 +262,7 @@ class courseCtrl {
 									require('Models/courseMdl.php');
 									$mdl_obj = new courseMdl();
 									#Send code to model
-									$student = $mdl_obj -> add_student_to_course($_GET['studentid']);
+									$student = $mdl_obj -> add_student_to_course($_GET['studentid'],$_GET['courseid']);
 									if (is_array($student)) {
 										#Get the view
 										require('Views/student_added_course.php');
@@ -280,11 +315,11 @@ class courseCtrl {
 											#Create the model object
 											$mdl_obj = new courseMdl();
 											#Create array to send to the add field function
-											$field_array = array ("idcurso" => $_GET['courseid'],
-																  "rubro" => $_GET['field'],
-																  "porcentaje" => $_GET['percentage']);
-											$mdl_return_value = $mdl_obj -> add_field_to_course($field_array);
-											if ($mdl_return_value) {
+											$field_array = array ("courseid" => $_GET['courseid'],
+																  "field" => $_GET['field'],
+																  "percentage" => $_GET['percentage']);
+											$field_array = $mdl_obj -> add_field_to_course($field_array);
+											if (is_array($field_array)) {
 												#Field was added to Course
 												#Get the view
 												require('Views/field_added_courseview.php');

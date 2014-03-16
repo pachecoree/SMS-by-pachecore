@@ -2,8 +2,8 @@
 
 class errors {
 
-	function error_add_course($course) {
-		echo 'Could not add "',$course,'" course';
+	function error_add_course() {
+		echo 'Could not add course';
 	}
 
 	function error_add_cicle($cicle) {
@@ -25,12 +25,23 @@ class errors {
 		echo 'Error capturing grade';
 	}
 
+	function not_valid_schedule() {
+		echo 'Could not validate Class Schedule';
+	}
+	function date_range_fail() {
+		echo 'End date can not be before Begin Date';
+	}
+
 	function error_query_list($course) {
 		echo 'Could not find course "',$course,'"';
 	}
 
 	function student_not_found($studentid) {
 		echo 'Could not find Student with ID : ' ,$studentid ;
+	}
+
+	function not_valid_date() {
+		echo 'Error: Date(s) not valid';
 	}
 
 	function not_found_input($input) {

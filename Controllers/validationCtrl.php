@@ -6,6 +6,20 @@ class validationCtrl {
 
 	}
 
+	function validate_date($date) {
+		$pattern = '/^[0-9]{1,2}[\/][0-9]{1,2}[\/][0-9]{4}$/';
+		if (preg_match($pattern, $date) == 1) {
+			list($day, $month, $year) = explode("/", $date);
+			$date = "$month/$day/$year";
+			if (checkdate($month, $day, $year)) {
+		 		return new DateTime($date);
+		 	}
+		 	else 
+		 		return false;
+		}
+		return false;
+	}
+
 	function validate_nrc($nrc) {
 		#Check if format was correctly input
 		$pattern = '/^[0-9]{5}$/';
@@ -43,6 +57,13 @@ class validationCtrl {
 			return true;
 		}
 		#Subject name is not valid
+		return false;
+	}
+
+	function compare_dates($fechaini , $fechafin) {
+		if ($fechaini < $fechafin) {
+			return true;
+		}
 		return false;
 	}
 
@@ -146,8 +167,27 @@ class validationCtrl {
 		#github Account is not valid
 		return false;
 	}
-}
 
+	function validate_schedule($dias,$horas,$horario) {
+		foreach ($dias as $key => $value) {
+			if ( !($value >= 1) && !($value <= 6)) {
+				return false;
+			}
+		}
+		foreach ($horas as $key => $value) {
+			if ( !($value > 1) && !($value <7)) {
+				return false;
+			}
+		}
+		
+		foreach ($horario as $key => $value) {
+			if (preg_match('/^(([0][789])|([1][0-9])|([2][0-2]))[0][0][:](([0][789])|([1][0-9])|([2][0-2]))[5][5]$/', $value) == 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
 
 
 ?>

@@ -11,7 +11,11 @@ class loginMdl {
 
 	function get_userid($userid) {
 		#Checks userid is correct
-		if (strcmp($userid, 'pachecore') == 0)
+		if (strcmp($userid, 'admin') == 0)
+			return true;
+		else if (strcmp($userid, 'alumno') == 0) {
+			return true;
+		else if (strcmp($userid,'profesor') == 0)
 			return true;
 		return false;
 	}

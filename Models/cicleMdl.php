@@ -9,7 +9,6 @@ class cicleMdl {
 
 	function add_cicle($cicle) {
 		#Recieves the cicle information to be added in an array
-		
 		#return status true if it was correctly created or false if it failed
 		return true;
 	}

@@ -1,9 +1,11 @@
 <?php
 
 /**
+@
 @author : Carlos Romero
 @Proyecto : SMS - Students Management System
 @Version : 1.0v
+@
 */
 
 #Recieve login information

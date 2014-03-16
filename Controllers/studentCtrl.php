@@ -21,27 +21,27 @@ class studentCtrl {
 					$student = array();
 					$bandera_datos = 0;
 					#Check if the name is valid
-					if (isset($_GET['paterno']) && isset($_GET['materno']) && isset($_GET['nombre'])) {
+					if (isset($_GET['first']) && isset($_GET['second']) && isset($_GET['name'])) {
 						#Validate full name
-						if ($this -> validation -> validate_name(($_GET['nombre'].' '.$_GET['paterno'].' '.$_GET['materno']))) {
+						if ($this -> validation -> validate_name(($_GET['name'].' '.$_GET['first'].' '.$_GET['second']))) {
 							#Check if e-mail exists
-							if (isset($_GET['correo'])) {
+							if (isset($_GET['email'])) {
 								#Validate e-mail
-								if ($this -> validation -> validate_email($_GET['correo'])) {
+								if ($this -> validation -> validate_email($_GET['email'])) {
 									#Check if Student ID exists
-									if (isset($_GET['codigo'])) {
+									if (isset($_GET['studentid'])) {
 										#Validate Student ID
-										if ($this -> validation -> validate_sid($_GET['codigo'])) {
+										if ($this -> validation -> validate_sid($_GET['studentid'])) {
 											#Check if Phonenumber exists
-											if (isset($_GET['celular'])) {
+											if (isset($_GET['cellphone'])) {
 												#Validate Phonenumber
-												if ($this -> validation -> validate_phonenumber($_GET['celular'])) {
-													$student['celular'] = $_GET['celular'];
+												if ($this -> validation -> validate_phonenumber($_GET['cellphone'])) {
+													$student['cellphone'] = $_GET['cellphone'];
 												}
 												else {
 													#Phonenumber not valid
 													$bandera_datos = 1;
-													$this -> errors -> not_valid_format($_GET['celular'],"Phone Number");
+													$this -> errors -> not_valid_format($_GET['cellphone'],"Phone Number");
 												}
 											}
 											#Check if Github account exists
@@ -60,7 +60,7 @@ class studentCtrl {
 											if (isset($_GET['web'])) {
 												#Validate Web Page
 												if ($this -> validation -> validate_web($_GET['web'])) {
-													$student['webpage'] = $_GET['web'];
+													$student['web'] = $_GET['web'];
 												}
 												else {
 													#Web Page not valid
@@ -70,22 +70,28 @@ class studentCtrl {
 											}
 											#All data has been validated
 											if ($bandera_datos == 0) {
+												#Fill Student array
+												$student['name'] = $_GET['name'].' '.$_GET['first'].' '.$_GET['second'];
+												$student['studentid'] = $_GET['studentid'];
+												$student['email'] = $_GET['email'];
+												$student['career'] = 'Computacion';
 												#Get the model
 												require('Models/studentMdl.php');
 												$mdl_object = new studentMdl();
-												if (is_array($mdl_object -> add_student($student))) {
+												$student = $mdl_object -> add_student($student);
+												if (is_array($student)) {
 													#Get the View
 													require('Views/studentview.php');
 												}
 												else {
 													#Display the add error
-													$this -> errors -> error_add_student($student['paterno'].' '.$student['materno'].' '. $student['nombre']);
+													$this -> errors -> error_add_student($student['first'].' '.$student['second'].' '. $student['nombre']);
 												}
 											}
 										}
 										else {
 											#Student id not valid
-											$this -> errors -> not_valid_format($_GET['codigo'],"Student ID");
+											$this -> errors -> not_valid_format($_GET['studentid'],"Student ID");
 										}
 									}
 									else {
@@ -95,7 +101,7 @@ class studentCtrl {
 								}
 								else {
 									#E-mail is not valid
-									$this -> errors -> not_valid_format($_GET['correo'],"E-mail");
+									$this -> errors -> not_valid_format($_GET['email'],"E-mail");
 								}
 							}
 							else {
@@ -105,7 +111,7 @@ class studentCtrl {
 						}
 						else {
 							#Full name is not valid
-							$this -> errors -> not_valid_format(($_GET['nombre'].' '.$_GET['paterno'].' '.$_GET['materno']),'Nombre Completo');
+							$this -> errors -> not_valid_format(($_GET['name'].' '.$_GET['first'].' '.$_GET['second']),'Nombre Completo');
 						}
 					}
 					else {
