@@ -10,6 +10,10 @@ class errors {
 		echo 'Could not add sheet';
 	}
 
+	function not_modify_cicle($cicle) {
+		echo 'Could not modify "',$cicle,'" status';
+	}
+
 	function notstudents_att() {
 		echo 'No students attendance registries were modified';
 	}

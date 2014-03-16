@@ -83,8 +83,53 @@ class cicleCtrl {
 						return;
 					}
 					break;
-				
-				default:
+		
+			case 'modify':
+					#Check if cicle exists
+					if (isset($_GET['cicle'])) {
+						#Validate cicle
+						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
+							#Check if status modifier exists
+							if (isset($_GET['status'])) {
+								#Validate status
+								$value = $this -> validation ->  validate_ciclestatus($_GET['status']);
+								if ($value == 0) {
+									#Send data to the model
+									$return_value = $this -> cicleMdl -> modify_status($_GET['cicle'],$_GET['status']);
+									#Create the array
+									$status_array = array("status" => $_GET['status'],
+														  "cicle" => $_GET['cicle']);
+									if ($return_value) {
+										#Get the View
+										require('Views/modify_cicle_statusview.php');
+									}
+									else {
+										$this -> errors -> not_modify_cicle($_GET['cicle']);
+									}
+								}
+								else {
+									#Status modifier is not valid
+									$this -> errors -> not_valid_format($_GET['status'],'Status');
+									return;
+								}
+							}
+							else {
+								#Status Modifier was not input
+								$this -> errors -> not_found_input('Status');
+							}
+						}
+						else {
+							#Cicle format is incorrect
+							$this -> errors -> not_valid_format($_GET['cicle'],'Cicle');
+						}
+					}
+					else {
+						#Cicle was not input
+						$this -> errors -> not_found_input('Cicle');
+					}
+					break;
+
+			default:
 					#Activity is not valid
 					$this -> errors -> not_valid_input($_GET['act'],'Activity');
 					break;

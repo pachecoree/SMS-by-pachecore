@@ -132,6 +132,13 @@ class validationCtrl {
 		return false;
 	}
 
+	function validate_ciclestatus($status) {
+		if (strcmp(strtolower($status), 'actual') == 0) {
+			return 0;
+		} 
+		return 1;
+	}
+
 	function validate_sid($sid) {
 		#Check if format was correctly input
 		$pattern = '/^[0-9]{9}$/';
