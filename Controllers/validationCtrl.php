@@ -139,6 +139,16 @@ class validationCtrl {
 		return 1;
 	}
 
+    function validate_studentstatus($status) {
+		if (strcmp(strtolower($status), 'inactivo') == 0) {
+			return 0;
+		} 
+		if (strcmp(strtolower($status), 'activo') == 0) {
+			return 1;
+		} 
+		return 2;
+	}
+
 	function validate_sid($sid) {
 		#Check if format was correctly input
 		$pattern = '/^[0-9]{9}$/';

@@ -14,6 +14,10 @@ class errors {
 		echo 'Could not modify "',$cicle,'" status';
 	}
 
+	function not_modify_student_status($studentid) {
+		echo 'Could not modify "',$studentid,'" status';
+	}
+
 	function notstudents_att() {
 		echo 'No students attendance registries were modified';
 	}

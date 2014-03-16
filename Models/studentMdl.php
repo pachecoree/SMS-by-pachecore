@@ -35,6 +35,17 @@ class studentMdl {
 		return $course_info;
 	}
 
+	function modify_status($studentid,$value) {
+		#Gets the Student ID
+		#Goes to the DB to search for the Student, and gets all his information
+		#Will change its status , to the one received
+		#Return array if it was succesfully changed, or false if it failed
+		$student_array = array("studentid" => $studentid,
+							   "status" => $value,
+							   "name" => "Pedro Ramirez Lopez");
+		return $student_array;
+	}
+
 }
 
 ?>

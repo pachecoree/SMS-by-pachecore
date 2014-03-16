@@ -120,6 +120,63 @@ class studentCtrl {
 					}
 					break;
 				
+				case 'modifystatus' :
+					#Check if student ID exists
+					if (isset($_GET['studentid'])) {
+						#Validate Student ID
+						if ($this -> validation -> validate_sid($_GET['studentid'])) {
+							#Check if value exists
+							if (isset($_GET['value'])) {
+								#Validate value
+								$value = $this -> validation -> validate_studentstatus($_GET['value']);
+								if ($value == 2) {
+									$this -> errors -> not_valid_format($_GET['value'],'Status Value');
+									return;
+								}
+								else if ($value == 0) {
+									#Change status to "INACTIVO"
+									#Get the model
+									require('Models/studentMdl.php');
+									#Create Model object
+									$mdl_obj = new studentMdl();
+									#Send to the model
+									$student_array = $mdl_obj -> modify_status($_GET['studentid'],"INACTIVO");
+								}
+								else if ($value == 1) {
+									#Change status to "ACTIVO"
+									#Get the model
+									require('Models/studentMdl.php');
+									#Create Model object
+									$mdl_obj = new studentMdl();
+									#Send to the model
+									$student_array = $mdl_obj -> modify_status($_GET['studentid'],"ACTIVO");
+								}
+								if (is_array($student_array)) {
+									#Get the view
+									require('Views/modify_student_statusview.php');
+									return;
+								}
+								else {
+									#Could not modify Student Status
+									$this -> errors -> not_modify_student_status($_GET['studentid']);
+								}
+							}
+							else {
+								#Status Value was not input
+								$this -> errors -> not_found_input('Status Value');
+							}
+						}
+						else {
+							#Student ID is not valid
+							$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+						}
+					}
+					else {
+						#Student ID was not input
+						$this -> errors -> not_found_input('Student ID');
+					}
+					break;
+
 				case 'list':
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
