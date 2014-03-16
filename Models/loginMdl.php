@@ -13,7 +13,7 @@ class loginMdl {
 		#Checks userid is correct
 		if (strcmp($userid, 'admin') == 0)
 			return true;
-		else if (strcmp($userid, 'alumno') == 0) {
+		else if (strcmp($userid, 'alumno') == 0)
 			return true;
 		else if (strcmp($userid,'profesor') == 0)
 			return true;
