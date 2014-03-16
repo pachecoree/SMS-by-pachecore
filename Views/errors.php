@@ -6,6 +6,10 @@ class errors {
 		echo 'Could not add course';
 	}
 
+	function error_add_sheet() {
+		echo 'Could not add sheet';
+	}
+
 	function error_add_cicle($cicle) {
 		echo 'Could not add "',$cicle,'" cicle';
 	}

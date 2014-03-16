@@ -63,6 +63,15 @@ class courseMdl {
 		$field_array['name'] = 'Carlos Mauricio Romero Pacheco';
 		return $field_array;
 	}
+
+	function add_sheet_to_course($sheet_array) {
+		#Go to the DB and get the course's information
+		#Add the sheet to the field  the course
+		#Return the array if was added , or false if it failed
+		$sheet_array['subject'] = 'Graficas por Computadoras';
+		$sheet_array['section'] = 'D01';
+		return $sheet_array;
+	}
 }
 
 ?>

@@ -73,6 +73,10 @@ class validationCtrl {
 		if (preg_match($pattern,$grade) == 1) {
 			return true;
 		}
+		else if (strcmp(strtoupper($grade),'NP') == 0)
+			return true;
+		else if (strcmp(strtoupper($grade),'SD') == 0)
+			return true;
 		#Percetange value is not valid
 		return false;
 	}

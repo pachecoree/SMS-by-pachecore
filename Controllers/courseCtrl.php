@@ -360,10 +360,56 @@ class courseCtrl {
 					}
  					break;
 
+ 				case 'addsheet':
+ 					#Check if Course ID exists
+ 					if (isset($_GET['courseid'])) {
+ 						#Validate Course ID
+ 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+ 							#Check if Field exists
+ 							if (isset($_GET['field'])) {
+ 								#Validate Field
+ 								if ($this -> validation -> validate_field($_GET['field'])) {
+ 									#Get the Model
+ 									require('Models/courseMdl.php');
+ 									#Create the model object
+ 									$mdl_obj = new courseMdl();
+ 									#Create array and send it to Model
+ 									$sheet_array = array("field" => $_GET['field'], "courseid" => $_GET['courseid']);
+ 									$sheet_array = $mdl_obj -> add_sheet_to_course($sheet_array);
+ 									if (is_array($sheet_array)) {
+ 										#Get the view
+ 										require('Views/add_sheet_course.php');
+ 									}
+ 									else {
+ 										#Failed to add sheet
+ 										$this -> errors -> error_add_sheet();
+ 									}
+ 								}
+ 								else {
+ 									#Field is not valid
+ 									$this -> errors -> not_valid_format($_GET['field'],'Field');
+ 								}
+ 							}
+ 							else {
+ 								#Course ID was not input
+			 					$this -> errors -> not_found_input('Course ID');
+ 							}
+ 						}
+ 						else {
+ 							#Course ID is not valid
+ 							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+ 						}
+ 					}
+ 					else {
+ 						#Course ID was not input
+	 					$this -> errors -> not_found_input('Course ID');
+ 					}
+ 					break;
+
  				case 'capture':
  					#Check if Student ID exists
  					if (isset($_GET['studentid'])) {
- 						#Validate if Student ID 
+ 						#Validate Student ID
  						if ($this -> validation -> validate_sid($_GET['studentid'])) {
  							#Check if field exists
  							if (isset($_GET['field'])) {
