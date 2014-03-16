@@ -58,9 +58,10 @@ class courseMdl {
 	function add_grade_to_field($field_array) {
 		#Go to the DB and get the course's and student's info
 		#Add the grade to the field of the student's course
-		#Return true the grade was succesfully captured , or false if it failed
-
-		return true;
+		#Return the array if the grade was succesfully captured , or false if it failed
+		$field_array['subject'] = "Topicos Selectos de Computacion I";
+		$field_array['name'] = 'Carlos Mauricio Romero Pacheco';
+		return $field_array;
 	}
 }
 

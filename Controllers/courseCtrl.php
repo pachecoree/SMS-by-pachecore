@@ -382,11 +382,11 @@ class courseCtrl {
  													#Create the model object
  													$mdl_obj = new courseMdl();
  													#Create array to send to the add field function
-													$field_array = array ("codigo" => $_GET['studentid'],
-																		  "rubro" => $_GET['field'],
-																		  "calificacion" => $_GET['grade']);
-													$mdl_return_value = $mdl_obj -> add_grade_to_field($field_array);
-													if ($mdl_return_value) {
+													$field_array = array ("studentid" => $_GET['studentid'],
+																		  "field" => $_GET['field'],
+																		  "grade" => $_GET['grade']);
+													$field_array = $mdl_obj -> add_grade_to_field($field_array);
+													if (is_array($field_array)) {
 														#Get the view
 														require('Views/capture_gradeview.php');
 													}
