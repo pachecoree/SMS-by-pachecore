@@ -13,6 +13,11 @@ class courseCtrl {
 
 	function run() {
 		#Check if the activity was input
+		var_dump($_SESSION);
+		echo '</br>';
+		session_start();
+		var_dump($_SESSION);
+		echo '</br>';
 		if (isset($_GET['act'])) {
 			switch ($_GET['act']) {
 				case 'create':

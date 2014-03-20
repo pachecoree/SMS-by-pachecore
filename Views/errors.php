@@ -10,6 +10,10 @@ class errors {
 		echo 'Could not add sheet';
 	}
 
+	function error_login_data() {
+		echo 'Incorrect User ID or Password';
+	}
+
 	function session_active() {
 		echo 'Theres already a user logged in';
 	}
