@@ -16,15 +16,7 @@
 				#Load login controller
 				require('Controllers/loginCtrl.php');
 				$ctrl = new loginCtrl();
-				#Validate login informatcion (userid, password)
-				if ($ctrl -> validate_login_data()) {
-					#Data was validated correctly
-
-				}
-				else {
-					#Data wasn't validated
-					echo 'Incorrect Userid or Password';
-					}
+				$ctrl -> run();
 				break;
 			
 			case 'cicle':

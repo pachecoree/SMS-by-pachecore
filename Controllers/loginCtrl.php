@@ -6,6 +6,8 @@
 			#get the Model create loginMdl object 
 			require('Models/loginMdl.php');
 			$this -> mdl_obj = new loginMdl();
+			require('Views/errors.php');
+			$this -> errors = new errors();
 		}
 
 		function validate_userid (){
@@ -35,9 +37,28 @@
 			}
 			else {
 				#Password was not input
-				echo 'Could not find Password in this context</br>';
+				echo 'Could not find Password</br>';
 			}
 			return false;
+		}
+
+		function session_started() {
+			if (isset($_SESSION['userid'])) {
+				return true;
+			}
+			return false;
+		}
+
+		function start_session($userid) {
+			//session_start();
+			//$_SESSION['started'] = true;
+			$_SESSION['userid'] = $userid;
+		}
+
+		function end_session() {
+			session_unset();
+			session_destroy();	
+			setcookie(session_name(), '', time()-3600);
 		}
 
 		function validate_login_data() {
@@ -45,12 +66,45 @@
 			if ($this -> validate_userid()) {
 				if ($this -> validate_password()) {
 					#Show view
-					require('Views/loginCorrectly.php');
 					return true;
 				}
 			}
-			#Login validation was unsuccesful
 			return false;
 		}
+
+		function run() {
+			if (isset($_GET['act'])) {
+				switch ($_GET['act']) {
+					case 'signin':
+					session_start();
+						if ($this -> session_started()) {
+							$this -> errors -> session_active();
+						}
+						else {
+							if ($this -> validate_login_data()) {
+								$this -> start_session($_GET['userid']);
+								require('Views/loginCorrectly.php');
+							}
+							else {
+								echo 'Incorrect Userid or Password';
+							}
+						}
+						break;
+
+					case 'signout':
+						session_start();
+						$this -> end_session();
+						echo 'Signed out';
+					
+					default:
+						//
+						break;
+				}
+			}
+			else {
+				//
+			}
+		}
+
 	}
 ?>

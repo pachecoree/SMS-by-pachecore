@@ -10,6 +10,10 @@ class errors {
 		echo 'Could not add sheet';
 	}
 
+	function session_active() {
+		echo 'Theres already a user logged in';
+	}
+
 	function not_modify_cicle($cicle) {
 		echo 'Could not modify "',$cicle,'" status';
 	}
