@@ -17,6 +17,8 @@ class studentCtrl {
 		if (isset($_GET['act'])) {
 			switch ($_GET['act']) {
 				case 'add':
+					$session = $this -> validation -> active_session();
+					if ($session >= 3) {
 					#Create student array
 					$student = array();
 					$bandera_datos = 0;
@@ -118,62 +120,83 @@ class studentCtrl {
 						#Name was not input
 						$this -> errors -> not_found_input('Full Name');
 					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
 					break;
 				
 				case 'modifystatus' :
-					#Check if student ID exists
-					if (isset($_GET['studentid'])) {
-						#Validate Student ID
-						if ($this -> validation -> validate_sid($_GET['studentid'])) {
-							#Check if value exists
-							if (isset($_GET['value'])) {
-								#Validate value
-								$value = $this -> validation -> validate_studentstatus($_GET['value']);
-								if ($value == 2) {
-									$this -> errors -> not_valid_format($_GET['value'],'Status Value');
-									return;
-								}
-								else if ($value == 0) {
-									#Change status to "INACTIVO"
-									#Get the model
-									require('Models/studentMdl.php');
-									#Create Model object
-									$mdl_obj = new studentMdl();
-									#Send to the model
-									$student_array = $mdl_obj -> modify_status($_GET['studentid'],"INACTIVO");
-								}
-								else if ($value == 1) {
-									#Change status to "ACTIVO"
-									#Get the model
-									require('Models/studentMdl.php');
-									#Create Model object
-									$mdl_obj = new studentMdl();
-									#Send to the model
-									$student_array = $mdl_obj -> modify_status($_GET['studentid'],"ACTIVO");
-								}
-								if (is_array($student_array)) {
-									#Get the view
-									require('Views/modify_student_statusview.php');
-									return;
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 3) {
+						#User is allowed to execute action
+						#Check if student ID exists
+						if (isset($_GET['studentid'])) {
+							#Validate Student ID
+							if ($this -> validation -> validate_sid($_GET['studentid'])) {
+								#Check if value exists
+								if (isset($_GET['value'])) {
+									#Validate value
+									$value = $this -> validation -> validate_studentstatus($_GET['value']);
+									if ($value == 2) {
+										$this -> errors -> not_valid_format($_GET['value'],'Status Value');
+										return;
+									}
+									else if ($value == 0) {
+										#Change status to "INACTIVO"
+										#Get the model
+										require('Models/studentMdl.php');
+										#Create Model object
+										$mdl_obj = new studentMdl();
+										#Send to the model
+										$student_array = $mdl_obj -> modify_status($_GET['studentid'],"INACTIVO");
+									}
+									else if ($value == 1) {
+										#Change status to "ACTIVO"
+										#Get the model
+										require('Models/studentMdl.php');
+										#Create Model object
+										$mdl_obj = new studentMdl();
+										#Send to the model
+										$student_array = $mdl_obj -> modify_status($_GET['studentid'],"ACTIVO");
+									}
+									if (is_array($student_array)) {
+										#Get the view
+										require('Views/modify_student_statusview.php');
+										return;
+									}
+									else {
+										#Could not modify Student Status
+										$this -> errors -> not_modify_student_status($_GET['studentid']);
+									}
 								}
 								else {
-									#Could not modify Student Status
-									$this -> errors -> not_modify_student_status($_GET['studentid']);
+									#Status Value was not input
+									$this -> errors -> not_found_input('Status Value');
 								}
 							}
 							else {
-								#Status Value was not input
-								$this -> errors -> not_found_input('Status Value');
+								#Student ID is not valid
+								$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
 							}
 						}
 						else {
-							#Student ID is not valid
-							$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+							#Student ID was not input
+							$this -> errors -> not_found_input('Student ID');
 						}
 					}
+					else if ($session == false) {
+						#Session is not started
+						$this -> errors -> not_logged_in();
+					}
 					else {
-						#Student ID was not input
-						$this -> errors -> not_found_input('Student ID');
+						#User is not allowed to execute action
+						$this -> errors -> not_valid_usertype();
 					}
 					break;
 

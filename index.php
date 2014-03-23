@@ -8,14 +8,18 @@
 @
 */
 
-#Recieve login information
 	#Check if the controller exists
 	if (isset($_GET['ctrl'])) {
+		//require('Models/database_config.inc');
+		$db_driver = new mysqli('localhost','root','tortas','SMS');
+		if ($db_driver -> connect_error) {
+			die("Error al conectar a la base de datos");
+		}
 		switch ($_GET['ctrl']) {
 			case 'login':
 				#Load login controller
 				require('Controllers/loginCtrl.php');
-				$ctrl = new loginCtrl();
+				$ctrl = new loginCtrl($db_driver);
 				$ctrl -> run();
 				break;
 			

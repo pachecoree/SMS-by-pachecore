@@ -2,22 +2,25 @@
 
 class loginMdl {
 
-	function get_password($password) {
-		#Checks is Password is correct
-		if (strcmp($password,'1234') == 0)
-			return true;
-		return false;
+	function __construct($driver) {
+		$this -> db_driver = $driver;
 	}
 
-	function get_userid($userid) {
+
+	function get_user($userid,$password,$table,$type) {
 		#Checks userid is correct
-		if (strcmp($userid, 'admin') == 0)
-			return true;
-		else if (strcmp($userid, 'alumno') == 0)
-			return true;
-		else if (strcmp($userid,'profesor') == 0)
-			return true;
-		return false;
+		$usuario = false;
+		$prepare = "SELECT name FROM ".$table." WHERE userid = ? AND password = ?";
+		if ($stmt = $this -> db_driver->prepare($prepare)) {
+				$stmt -> bind_param('is',$userid,$password);
+	    		$stmt->execute();
+	    	$stmt->bind_result($dbuser);
+	    	if ($stmt->fetch()) {
+	    		$usuario = array ('usuario' => $dbuser, 'type' => $type);
+	    	}
+	    	$stmt->close();
+		}
+		return $usuario;
 	}
 }
 ?>

@@ -149,9 +149,27 @@ class validationCtrl {
 		return 2;
 	}
 
+	function validate_userid($userid) {
+		#Check if format was correctly input
+		$pattern = '/^[0-9d][0-9]{8}$/i';
+		if (preg_match($pattern,$userid) == 1) {
+			return 1;
+		}
+		$pattern = '/^[0-9d][0-9]{5,7}$/i';
+		if (preg_match($pattern,$userid) == 1) {
+			return 2;
+		}
+		$pattern = '/^[0-9d][0-9]{4}$/i';
+		if (preg_match($pattern,$userid) == 1) {
+			return 3;
+		}
+		#Student ID is not valid
+		return false;
+	}
+
 	function validate_sid($sid) {
 		#Check if format was correctly input
-		$pattern = '/^[0-9]{9}$/';
+		$pattern = '/^[0-9d][0-9]{8}$/i';
 		if (preg_match($pattern,$sid) == 1) {
 			return true;
 		}
@@ -218,6 +236,28 @@ class validationCtrl {
 			}
 		}
 		return true;
+	}
+
+	function active_session() {
+		#Will handle 3 numerical status
+		#3 - Logged and the account type has admin rights
+		#2 - Logged and the account type has teacher rights
+		#1 - Logged and the account type has student rights
+		#Will return false if session is not active
+		session_start();
+		if (isset($_SESSION['started'])) {
+			if ($_SESSION['type'] == 3) {
+				return 3;
+			}
+			else if ($_SESSION['type'] == 2) {
+				return 2;
+			}
+			else if ($_SESSION['type'] == 1) {
+				return 1;
+			}
+		}
+		else
+			return false;
 	}
 }
 

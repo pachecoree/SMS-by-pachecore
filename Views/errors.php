@@ -82,6 +82,18 @@ class errors {
 		#Recieves the input and displays the error
 		echo $case,': ',$input ,' format is not valid';
 	}
+
+	function date_not_valid($date) {
+		echo $date ,'is not a valid date';
+	}
+
+	function not_logged_in() {
+		echo 'Please log in first';
+	}
+
+	function not_valid_usertype() {
+		echo 'You do not have the privileges to perform that action';
+	}
 }
 
 

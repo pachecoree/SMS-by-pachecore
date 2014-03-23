@@ -12,70 +12,72 @@ class courseCtrl {
 	}
 
 	function run() {
-		#Check if the activity was input
-		var_dump($_SESSION);
-		echo '</br>';
-		session_start();
-		var_dump($_SESSION);
-		echo '</br>';
-		if (isset($_GET['act'])) {
-			switch ($_GET['act']) {
-				case 'create':
-					#Check if cicle exists
-					if (isset($_GET['cicle'])) {
-						#Validate if cicle is correct
-						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
-							#Check if the subject name exists
-							if (isset($_GET['subject'])) {
-								#Validate if the subject name is valid
-								if ($this -> validation -> validate_subject($_GET['subject'])) {
-									#Check if the NRC exists
-									if (isset($_GET['nrc'])) {
-										#Validate if the nrc is valid
-										if ($this -> validation -> validate_nrc($_GET['nrc'])) {
-											#Check if section exists
-											if (isset($_GET['section'])) {
-												#Validate if the section is correct
-												if ($this -> validation -> validate_section($_GET['section'])) {
-													#Check if the course schedule is correct
-													#Check if course days and hours exists
-													if (isset($_GET['days']) && isset($_GET['hours']) && isset($_GET['schedule'])) {
-														if ($this -> validation -> validate_schedule($_GET['days'],$_GET['hours'],$_GET['schedule'])) {
-															#All the course data has been validated correctly 
-															#Get the model
-															require('Models/courseMdl.php');
-															#Create the course array and set the values
-															$course_array = array( "subject" => $_GET['subject'],
-																		     		"cicle" => $_GET['cicle'],
-																			 	    "section" => $_GET['section'],
-																					"nrc" => $_GET['nrc']);
-															#Separate days elements and add them to course array
-															foreach ($_GET['days'] as $key => $value) {
-																$aux_array[] = $value;
-															}
-															$course_array['days'] = $aux_array;
-															$aux_array = array();
-															#Separate hours elements and add them to course array
-															foreach ($_GET['hours'] as $key => $value) {
-																$aux_array[] = $value;
-															}
-															$course_array['hours'] = $aux_array;
-															$aux_array = array();
-															#Separate schedule elements and add them to course array
-															foreach ($_GET['schedule'] as $key => $value) {
-																$aux_array[] = $value;
-															}
-															$course_array['schedule'] = $aux_array;
-															#Create the Model object
-															$course_obj = new courseMdl();
-															#Callback to the add function, sending the array created as a parameter
-															if ($course_obj -> add_course($course_array)) {
-																#Get the view
-																require('Views/courseview.php');
+			#Check if the activity was input
+			if (isset($_GET['act'])) {
+				switch ($_GET['act']) {
+					case 'create':
+					$session = $this -> validation -> active_session();
+					if ($session >= 2) {
+						#Check if cicle exists
+						if (isset($_GET['cicle'])) {
+							#Validate if cicle is correct
+							if ($this -> validation -> validate_cicle($_GET['cicle'])) {
+								#Check if the subject name exists
+								if (isset($_GET['subject'])) {
+									#Validate if the subject name is valid
+									if ($this -> validation -> validate_subject($_GET['subject'])) {
+										#Check if the NRC exists
+										if (isset($_GET['nrc'])) {
+											#Validate if the nrc is valid
+											if ($this -> validation -> validate_nrc($_GET['nrc'])) {
+												#Check if section exists
+												if (isset($_GET['section'])) {
+													#Validate if the section is correct
+													if ($this -> validation -> validate_section($_GET['section'])) {
+														#Check if the course schedule is correct
+														#Check if course days and hours exists
+														if (isset($_GET['days']) && isset($_GET['hours']) && isset($_GET['schedule'])) {
+															if ($this -> validation -> validate_schedule($_GET['days'],$_GET['hours'],$_GET['schedule'])) {
+																#All the course data has been validated correctly 
+																#Get the model
+																require('Models/courseMdl.php');
+																#Create the course array and set the values
+																$course_array = array( "subject" => $_GET['subject'],
+																			     		"cicle" => $_GET['cicle'],
+																				 	    "section" => $_GET['section'],
+																						"nrc" => $_GET['nrc']);
+																#Separate days elements and add them to course array
+																foreach ($_GET['days'] as $key => $value) {
+																	$aux_array[] = $value;
+																}
+																$course_array['days'] = $aux_array;
+																$aux_array = array();
+																#Separate hours elements and add them to course array
+																foreach ($_GET['hours'] as $key => $value) {
+																	$aux_array[] = $value;
+																}
+																$course_array['hours'] = $aux_array;
+																$aux_array = array();
+																#Separate schedule elements and add them to course array
+																foreach ($_GET['schedule'] as $key => $value) {
+																	$aux_array[] = $value;
+																}
+																$course_array['schedule'] = $aux_array;
+																#Create the Model object
+																$course_obj = new courseMdl();
+																#Callback to the add function, sending the array created as a parameter
+																if ($course_obj -> add_course($course_array)) {
+																	#Get the view
+																	require('Views/courseview.php');
+																}
+																else {
+																	#Error adding course
+																	$this -> errors -> error_add_course($_GET['subject']);
+																}
 															}
 															else {
-																#Error adding course
-																$this -> errors -> error_add_course($_GET['subject']);
+																#Class schedule is incorrect
+																$this -> errors -> not_valid_schedule();
 															}
 														}
 														else {
@@ -84,52 +86,56 @@ class courseCtrl {
 														}
 													}
 													else {
-														#Class schedule is incorrect
-														$this -> errors -> not_valid_schedule();
+														#Section is not valid
+														$this -> errors -> not_valid_format($_GET['section'],'Section');
 													}
 												}
 												else {
-													#Section is not valid
-													$this -> errors -> not_valid_format($_GET['section'],'Section');
+													#Section was not input
+													$this -> errors -> not_found_input('Section');
 												}
 											}
 											else {
-												#Section was not input
-												$this -> errors -> not_found_input('Section');
+												#NRC is not valid
+												$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
 											}
 										}
 										else {
-											#NRC is not valid
-											$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+											#NRC was not input
+											$this -> errors -> not_found_input('NRC');
 										}
 									}
 									else {
-										#NRC was not input
-										$this -> errors -> not_found_input('NRC');
+										#Subject name is not valid
+										$this -> errors -> not_valid_format($_GET['subject'],'Subject Name');
 									}
 								}
 								else {
-									#Subject name is not valid
-									$this -> errors -> not_valid_format($_GET['subject'],'Subject Name');
+									#Subject name was not input
+									$this -> errors -> not_found_input('Subject Name');
 								}
 							}
 							else {
-								#Subject name was not input
-								$this -> errors -> not_found_input('Subject Name');
+								#Cicle format is incorrect
+								$this -> errors -> not_valid_format($_GET['cicle'],'Cicle');
 							}
 						}
 						else {
-							#Cicle format is incorrect
-							$this -> errors -> not_valid_format($_GET['cicle'],'Cicle');
+							#Cicle was not input
+							$this -> errors -> not_found_input('Cicle');
 						}
 					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
 					else {
-						#Cicle was not input
-						$this -> errors -> not_found_input('Cicle');
+						$this -> errors -> not_valid_usertype();
 					}
 					break;
 				
 				case 'clone':
+					$session = $this -> validation -> active_session();
+					if ($session >= 2) {
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
 						#Validate if cicle is correct
@@ -183,20 +189,32 @@ class courseCtrl {
 								else {
 									#NRC was not input
 									$this -> errors -> not_found_input('NRC');
+								}
+							}
+							else {
+								#Cicle format is incorrect
+								$this -> errors -> not_valid_format($_GET['cicle'],'Cicle');
+							}
+						}
+						else {
+							#Cicle was not input
+							$this -> errors -> not_found_input('Cicle');
 						}
 					}
-					else {
-						#Cicle format is incorrect
-						$this -> errors -> not_valid_format($_GET['cicle'],'Cicle');
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
 					}
-				}
-				else {
-					#Cicle was not input
-					$this -> errors -> not_found_input('Cicle');
-				}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
 					break;
 
 				case 'list_a':
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						#User is allowed to execute action
 					#Check if course exists
 					if (isset($_GET['courseid'])) {
 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
@@ -223,9 +241,21 @@ class courseCtrl {
 						#Course ID was not input
 						$this -> errors -> not_found_input('Course ID');
 					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
 					break;
 
 				case 'list_c':
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						#User is allowed to execute action
 					#Check if course exists
 					if (isset($_GET['courseid'])) {
 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
@@ -252,9 +282,18 @@ class courseCtrl {
 						#Course ID was not input
 						$this -> errors -> not_found_input('Course ID');
 					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
 					break;
 
 				case 'addstudent':
+					$session = $this -> validation -> active_session();
+					if ($session >= 2) {
 					#Check if course exists
 					if (isset($_GET['courseid'])) {
 						#Validate Course
@@ -299,6 +338,13 @@ class courseCtrl {
 					else {
 						#Course was not input
 						$this -> errors -> not_found_input('Course ID');
+					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
 					}
 					break;
 
