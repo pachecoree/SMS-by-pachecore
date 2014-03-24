@@ -201,6 +201,11 @@ class studentCtrl {
 					break;
 
 				case 'list':
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 1) {
+						#User is allowed to execute action
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
 						#Validate if cicle is valid
@@ -263,6 +268,15 @@ class studentCtrl {
 					else {
 						#Cicle was not input
 						$this -> errors -> not_found_input('Cicle');
+					}
+					}
+					else if ($session == false) {
+						#Session is not started
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						#User is not allowed to execute action
+						$this -> errors -> not_valid_usertype();
 					}
 					break;
 

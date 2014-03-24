@@ -349,251 +349,299 @@ class courseCtrl {
 					break;
 
 				case 'addfield':
-					#Check if course exists
-					if (isset($_GET['courseid'])) {
-						#Check if Course ID is valid
-						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
-							#Check Field exists
-							if (isset($_GET['field'])) {
-								#Check if Field is valid
-								if ($this -> validation -> validate_field($_GET['field'])) {
-									#Check if percentage exists
-									if (isset($_GET['percentage'])) {
-										#Check if percentage is valid
-										if ($this -> validation -> validate_percentage($_GET['percentage'])) {
-											#Get the model
-											require('Models/courseMdl.php');
-											#Create the model object
-											$mdl_obj = new courseMdl();
-											#Create array to send to the add field function
-											$field_array = array ("courseid" => $_GET['courseid'],
-																  "field" => $_GET['field'],
-																  "percentage" => $_GET['percentage']);
-											$field_array = $mdl_obj -> add_field_to_course($field_array);
-											if (is_array($field_array)) {
-												#Field was added to Course
-												#Get the view
-												require('Views/field_added_courseview.php');
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						#User is allowed to execute action
+						#Check if course exists
+						if (isset($_GET['courseid'])) {
+							#Check if Course ID is valid
+							if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+								#Check Field exists
+								if (isset($_GET['field'])) {
+									#Check if Field is valid
+									if ($this -> validation -> validate_field($_GET['field'])) {
+										#Check if percentage exists
+										if (isset($_GET['percentage'])) {
+											#Check if percentage is valid
+											if ($this -> validation -> validate_percentage($_GET['percentage'])) {
+												#Get the model
+												require('Models/courseMdl.php');
+												#Create the model object
+												$mdl_obj = new courseMdl();
+												#Create array to send to the add field function
+												$field_array = array ("courseid" => $_GET['courseid'],
+																	  "field" => $_GET['field'],
+																	  "percentage" => $_GET['percentage']);
+												$field_array = $mdl_obj -> add_field_to_course($field_array);
+												if (is_array($field_array)) {
+													#Field was added to Course
+													#Get the view
+													require('Views/field_added_courseview.php');
+												}
+												else {
+													#Could not add field to course
+													$this -> errors ->  error_add_field($_GET['courseid']);
+												}
 											}
 											else {
-												#Could not add field to course
-												$this -> errors ->  error_add_field($_GET['courseid']);
+												#Percetange is not valid
+												$this -> errors -> not_valid_format($_GET['percentage'],'percentage');
 											}
 										}
 										else {
-											#Percetange is not valid
-											$this -> errors -> not_valid_format($_GET['percentage'],'percentage');
+											#Percentage was not input
+											$this -> errors -> not_found_input('percentage');
 										}
 									}
 									else {
-										#Percentage was not input
-										$this -> errors -> not_found_input('percentage');
+										#Field is not valid
+										$this -> errors -> not_valid_format($_GET['field'],'Field');
 									}
 								}
 								else {
-									#Field is not valid
-									$this -> errors -> not_valid_format($_GET['field'],'Field');
+									#Field was not input
+									$this -> errors -> not_found_input('Field');
 								}
 							}
 							else {
-								#Field was not input
-								$this -> errors -> not_found_input('Field');
+								#Course ID is not valid
+								$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
 							}
 						}
 						else {
-							#Course ID is not valid
-							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+							#Course was not input
+							$this -> errors -> not_found_input('Course ID');
 						}
 					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
 					else {
-						#Course was not input
-						$this -> errors -> not_found_input('Course ID');
+						$this -> errors -> not_valid_usertype();
 					}
  					break;
 
  				case 'addsheet':
- 					#Check if Course ID exists
- 					if (isset($_GET['courseid'])) {
- 						#Validate Course ID
- 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
- 							#Check if Field exists
- 							if (isset($_GET['field'])) {
- 								#Validate Field
- 								if ($this -> validation -> validate_field($_GET['field'])) {
- 									#Get the Model
- 									require('Models/courseMdl.php');
- 									#Create the model object
- 									$mdl_obj = new courseMdl();
- 									#Create array and send it to Model
- 									$sheet_array = array("field" => $_GET['field'], "courseid" => $_GET['courseid']);
- 									$sheet_array = $mdl_obj -> add_sheet_to_course($sheet_array);
- 									if (is_array($sheet_array)) {
- 										#Get the view
- 										require('Views/add_sheet_course.php');
- 									}
- 									else {
- 										#Failed to add sheet
- 										$this -> errors -> error_add_sheet();
- 									}
- 								}
- 								else {
- 									#Field is not valid
- 									$this -> errors -> not_valid_format($_GET['field'],'Field');
- 								}
- 							}
- 							else {
- 								#Field was not input
-			 					$this -> errors -> not_found_input('Field');
- 							}
- 						}
- 						else {
- 							#Course ID is not valid
- 							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
- 						}
- 					}
- 					else {
- 						#Course ID was not input
-	 					$this -> errors -> not_found_input('Course ID');
- 					}
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session == 2) {
+						#User is allowed to execute action
+	 					#Check if Course ID exists
+	 					if (isset($_GET['courseid'])) {
+	 						#Validate Course ID
+	 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+	 							#Check if Field exists
+	 							if (isset($_GET['field'])) {
+	 								#Validate Field
+	 								if ($this -> validation -> validate_field($_GET['field'])) {
+	 									#Get the Model
+	 									require('Models/courseMdl.php');
+	 									#Create the model object
+	 									$mdl_obj = new courseMdl();
+	 									#Create array and send it to Model
+	 									$sheet_array = array("field" => $_GET['field'], "courseid" => $_GET['courseid']);
+	 									$sheet_array = $mdl_obj -> add_sheet_to_course($sheet_array);
+	 									if (is_array($sheet_array)) {
+	 										#Get the view
+	 										require('Views/add_sheet_course.php');
+	 									}
+	 									else {
+	 										#Failed to add sheet
+	 										$this -> errors -> error_add_sheet();
+	 									}
+	 								}
+	 								else {
+	 									#Field is not valid
+	 									$this -> errors -> not_valid_format($_GET['field'],'Field');
+	 								}
+	 							}
+	 							else {
+	 								#Field was not input
+				 					$this -> errors -> not_found_input('Field');
+	 							}
+	 						}
+	 						else {
+	 							#Course ID is not valid
+	 							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+	 						}
+	 					}
+	 					else {
+	 						#Course ID was not input
+		 					$this -> errors -> not_found_input('Course ID');
+	 					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
  					break;
 
  				case 'attendance':
- 					#Check if Course ID exists
- 					if (isset($_GET['courseid'])) {
- 						#Validate Course ID
- 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
- 							#Check if Value exists
- 							if (isset($_GET['value'])) {
- 								#Validate value
- 								if ($this -> validation -> validate_attendance($_GET['value']) != 2) {
- 									$value = $this -> validation -> validate_attendance($_GET['value']);
- 									#Check if Student ID exists, can be more than one
- 									if (isset($_GET['studentid'])) {
- 										#Get the model
- 										require('Models/courseMdl.php');
- 										#Create the Model object
- 										$mdl_obj = new courseMdl();
- 										#Validated Student's ID
- 										$studentsid_aray = array();
- 										foreach ($_GET['studentid'] as $key => $SID) {
- 											if ($this -> validation -> validate_sid($SID))
- 												$studentsid_aray[] = $SID;
- 										}
- 										#Found Students
- 										$studentsid_aray = $mdl_obj -> check_studentsid($studentsid_aray,$_GET['courseid']);
- 										if (sizeof($studentsid_aray) == 0) {
- 											#No students found from student's ID
- 											$this -> errors -> notstudents_att();
- 											return;
- 										}
- 										if ($value == 1) {
- 											require('Views/attendance_putview.php');
- 										}
- 										else if ($value == 0) {
- 											require('Views/attendance_removeview.php');
- 										}
- 										return;
- 									}
- 									else {
- 										#Students ID where not input
- 										$this -> errors -> not_found_input('Student(s) ID');
- 									}
- 								}
- 								else {
- 									#Value is not valid
- 									$this -> errors -> not_valid_format($_GET['value'],'Value');
- 								}
- 							}	
- 							else {
- 								#Value was not input
- 								$this -> errors -> not_found_input('Value');
- 							}
- 						}
- 						else {
- 							#Course ID is not valid
- 							$this -> errors ->not_valid_format($_GET['courseid'],'Course ID');
- 						}
- 					}
- 					else {
- 						#Course ID was not input
- 						$this -> errors -> not_found_input('Course ID');
- 					}
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						#User is allowed to execute action
+	 					#Check if Course ID exists
+	 					if (isset($_GET['courseid'])) {
+	 						#Validate Course ID
+	 						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+	 							#Check if Value exists
+	 							if (isset($_GET['value'])) {
+	 								#Validate value
+	 								if ($this -> validation -> validate_attendance($_GET['value']) != 2) {
+	 									$value = $this -> validation -> validate_attendance($_GET['value']);
+	 									#Check if Student ID exists, can be more than one
+	 									if (isset($_GET['studentid'])) {
+	 										#Get the model
+	 										require('Models/courseMdl.php');
+	 										#Create the Model object
+	 										$mdl_obj = new courseMdl();
+	 										#Validated Student's ID
+	 										$studentsid_aray = array();
+	 										foreach ($_GET['studentid'] as $key => $SID) {
+	 											if ($this -> validation -> validate_sid($SID))
+	 												$studentsid_aray[] = $SID;
+	 										}
+	 										#Found Students
+	 										$studentsid_aray = $mdl_obj -> check_studentsid($studentsid_aray,$_GET['courseid']);
+	 										if (sizeof($studentsid_aray) == 0) {
+	 											#No students found from student's ID
+	 											$this -> errors -> notstudents_att();
+	 											return;
+	 										}
+	 										if ($value == 1) {
+	 											require('Views/attendance_putview.php');
+	 										}
+	 										else if ($value == 0) {
+	 											require('Views/attendance_removeview.php');
+	 										}
+	 										return;
+	 									}
+	 									else {
+	 										#Students ID where not input
+	 										$this -> errors -> not_found_input('Student(s) ID');
+	 									}
+	 								}
+	 								else {
+	 									#Value is not valid
+	 									$this -> errors -> not_valid_format($_GET['value'],'Value');
+	 								}
+	 							}	
+	 							else {
+	 								#Value was not input
+	 								$this -> errors -> not_found_input('Value');
+	 							}
+	 						}
+	 						else {
+	 							#Course ID is not valid
+	 							$this -> errors ->not_valid_format($_GET['courseid'],'Course ID');
+	 						}
+	 					}
+	 					else {
+	 						#Course ID was not input
+	 						$this -> errors -> not_found_input('Course ID');
+	 					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
  					break;	
 
  				case 'capture':
- 					#Check if Student ID exists
- 					if (isset($_GET['studentid'])) {
- 						#Validate Student ID
- 						if ($this -> validation -> validate_sid($_GET['studentid'])) {
- 							#Check if field exists
- 							if (isset($_GET['field'])) {
- 								#Validate Field
- 								if ($this -> validation -> validate_field($_GET['field'])) {
- 									#Check if grade exists
- 									if (isset($_GET['grade'])) {
- 										#Validate grade
- 										if ($this -> validation -> validate_grade($_GET['grade'])) {
- 											#Check if Course ID exists
- 											if (isset($_GET['courseid'])) {
- 												#Validate if Course ID is correct
- 												if ($this -> validation -> validate_courseid($_GET['courseid'])) {
- 													#Get the model
- 													require('Models/courseMdl.php');
- 													#Create the model object
- 													$mdl_obj = new courseMdl();
- 													#Create array to send to the add field function
-													$field_array = array ("studentid" => $_GET['studentid'],
-																		  "field" => $_GET['field'],
-																		  "grade" => $_GET['grade']);
-													$field_array = $mdl_obj -> add_grade_to_field($field_array);
-													if (is_array($field_array)) {
-														#Get the view
-														require('Views/capture_gradeview.php');
-													}
-													else {
-														#Failed to capture grade
-														$this -> errors -> error_capture_grade();
-													}
- 												}
- 												else {
- 													#Course ID is not valid
- 													$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
- 												}
- 											}
- 											else {
- 												#Course ID was not iput
- 												$this -> errors -> not_found_input('Course ID');
- 											}
- 										}
- 										else {
- 											#Grade is not valid
- 											$this -> errors -> not_valid_format($_GET['grade'],'Grade');
- 										}
- 									}
- 									else {
- 										#Grade was not input
- 										$this -> errors -> not_found_input('Grade');
- 									}
- 								}
- 								else {
- 									#Field is not valid
- 									$this -> errors -> not_valid_format($_GET['field'],'Field');
- 								}
- 							}
- 							else {
- 								#Field was not input
- 								$this -> errors -> not_found_input('Field');
- 							}
- 						}
- 						else {
- 							#Student ID is not valid
- 							$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
- 						}
- 					}
- 					else {
- 						#Student ID was not input
- 						$this -> errors -> not_found_input('Student ID');
- 					}
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						#User is allowed to execute action
+	 					#Check if Student ID exists
+	 					if (isset($_GET['studentid'])) {
+	 						#Validate Student ID
+	 						if ($this -> validation -> validate_sid($_GET['studentid'])) {
+	 							#Check if field exists
+	 							if (isset($_GET['field'])) {
+	 								#Validate Field
+	 								if ($this -> validation -> validate_field($_GET['field'])) {
+	 									#Check if grade exists
+	 									if (isset($_GET['grade'])) {
+	 										#Validate grade
+	 										if ($this -> validation -> validate_grade($_GET['grade'])) {
+	 											#Check if Course ID exists
+	 											if (isset($_GET['courseid'])) {
+	 												#Validate if Course ID is correct
+	 												if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+	 													#Get the model
+	 													require('Models/courseMdl.php');
+	 													#Create the model object
+	 													$mdl_obj = new courseMdl();
+	 													#Create array to send to the add field function
+														$field_array = array ("studentid" => $_GET['studentid'],
+																			  "field" => $_GET['field'],
+																			  "grade" => $_GET['grade']);
+														$field_array = $mdl_obj -> add_grade_to_field($field_array);
+														if (is_array($field_array)) {
+															#Get the view
+															require('Views/capture_gradeview.php');
+														}
+														else {
+															#Failed to capture grade
+															$this -> errors -> error_capture_grade();
+														}
+	 												}
+	 												else {
+	 													#Course ID is not valid
+	 													$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+	 												}
+	 											}
+	 											else {
+	 												#Course ID was not iput
+	 												$this -> errors -> not_found_input('Course ID');
+	 											}
+	 										}
+	 										else {
+	 											#Grade is not valid
+	 											$this -> errors -> not_valid_format($_GET['grade'],'Grade');
+	 										}
+	 									}
+	 									else {
+	 										#Grade was not input
+	 										$this -> errors -> not_found_input('Grade');
+	 									}
+	 								}
+	 								else {
+	 									#Field is not valid
+	 									$this -> errors -> not_valid_format($_GET['field'],'Field');
+	 								}
+	 							}
+	 							else {
+	 								#Field was not input
+	 								$this -> errors -> not_found_input('Field');
+	 							}
+	 						}
+	 						else {
+	 							#Student ID is not valid
+	 							$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+	 						}
+	 					}
+	 					else {
+	 						#Student ID was not input
+	 						$this -> errors -> not_found_input('Student ID');
+	 					}
+					}
+					else if ($session == false) {
+						$this -> errors -> not_logged_in();
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
  					break;
 
 				default:
