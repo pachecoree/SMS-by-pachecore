@@ -4,7 +4,8 @@
 echo 'Course created correctly</br></br>';
 
 echo '</br>Cicle : ', $course_array['cicle'];
-echo '</br>Subject :', $course_array['subject'];
+echo '</br>Clave de la Materia : ',$course_array['subject'];
+echo '</br>Subject :', $course_array['subject_name'];
 echo '</br>Section :', $course_array['section'];
 echo '</br>NRC :',$course_array['nrc'];
 echo '</br>Class Schedule : </br>';

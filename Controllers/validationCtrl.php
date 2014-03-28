@@ -52,7 +52,8 @@ class validationCtrl {
 
 	function validate_subject($subject) {
 		#Check if format was correctly input
-		$pattern = '/^[a-z ]{1,}$/i';
+		return true; //mientras temporal
+		$pattern = '/^[a-z]{1}[a-z0-9][0-9]{3}-d[0-9]{2}$/i';
 		if (preg_match($pattern,$subject) == 1) {
 			return true;
 		}

@@ -26,7 +26,7 @@
 			case 'cicle':
 				#Load cicle controller
 				require('Controllers/cicleCtrl.php');
-				$ctrl = new cicleCtrl();
+				$ctrl = new cicleCtrl($db_driver);
 				$ctrl -> run();
 				break;
 
@@ -34,7 +34,7 @@
 				#Load course controller
 				require('Controllers/courseCtrl.php');
 				$ctrl = new courseCtrl();
-				$ctrl -> run();
+				$ctrl -> run($db_driver);
 				
 				break;
 

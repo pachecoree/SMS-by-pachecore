@@ -2,11 +2,11 @@
 
 class cicleCtrl {
 
-	function __construct() {
+	function __construct($driver) {
 		#Constructor
 		require('Models/cicleMdl.php');
 		#Create Model object
-		$this -> cicleMdl = new cicleMdl();
+		$this -> cicleMdl = new cicleMdl($driver);
 		#Create the errors object 
 		require('Views/errors.php');
 		$this -> errors = new errors();
@@ -48,7 +48,7 @@ class cicleCtrl {
 														$non_workingarray[] = $date;
 													}
 													else {
-														$this -> validation -> day_not_valid($date);
+														$this -> errors ->not_valid_date($date);
 														return;
 													}
 												}
@@ -56,23 +56,27 @@ class cicleCtrl {
 											else {
 												$date = $this -> validation -> validate_date($_GET['nonworking']);
 												if (!is_bool($date)) {
-												$non_workingarray[] = $date;
+													$non_workingarray[] = $date;
 												}
 												else {
-													$this -> validation -> day_not_valid($date);
+													$this -> errors -> not_valid_date($date);
 													return;
 												}
 											}
 										}
 										#Send the data to the model
 										$ciclo = $_GET['cicle'];
-										if ($this -> cicleMdl -> add_cicle($ciclo)) {
+										$cicle_array = array ( 'clave_ciclo' => $ciclo,
+															   'inicio' => $fechainicial,
+															   'fin' => $fechafinal);
+										$cicle_return = $this -> cicleMdl -> add_cicle($cicle_array,$non_workingarray);
+										if ($cicle_return == true) {
 											#Cicle created correctly
 											require('Views/cicleview.php');
 										}
 										else {
 											#Cicle creation failed
-											$errors -> error_add_cicle($_GET['cicle']); 
+											$this -> errors -> error_add_cicle($_GET['cicle']); 
 										}
 										return;
 									}

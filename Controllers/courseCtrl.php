@@ -11,7 +11,7 @@ class courseCtrl {
 		$this -> validation = new validationCtrl();
 	}
 
-	function run() {
+	function run($db_driver) {
 			#Check if the activity was input
 			if (isset($_GET['act'])) {
 				switch ($_GET['act']) {
@@ -42,9 +42,8 @@ class courseCtrl {
 																#Get the model
 																require('Models/courseMdl.php');
 																#Create the course array and set the values
-																$course_array = array( "subject" => $_GET['subject'],
-																			     		"cicle" => $_GET['cicle'],
-																				 	    "section" => $_GET['section'],
+																$course_array = array( "subject" => strtoupper($_GET['subject']),
+																				 	    "section" => strtoupper($_GET['section']),
 																						"nrc" => $_GET['nrc']);
 																#Separate days elements and add them to course array
 																foreach ($_GET['days'] as $key => $value) {
@@ -64,9 +63,9 @@ class courseCtrl {
 																}
 																$course_array['schedule'] = $aux_array;
 																#Create the Model object
-																$course_obj = new courseMdl();
+																$course_obj = new courseMdl($db_driver);
 																#Callback to the add function, sending the array created as a parameter
-																if ($course_obj -> add_course($course_array)) {
+																if (is_array($course_array = $course_obj -> add_course($course_array))) {
 																	#Get the view
 																	require('Views/courseview.php');
 																}
@@ -153,7 +152,7 @@ class courseCtrl {
 												require('Models/courseMdl.php');
 												#Create the course array and set the values
 												$course_array = array( "cicle" => $_GET['cicle'],
-															 	       "section" => $_GET['section'],
+															 	       "section" => 'd04',
 																	   "nrc" => $_GET['nrc']);
 												$course_array['subject'] = 'Matematicas II';
 												$course_array['days'] = array('1','3','5');
@@ -168,7 +167,7 @@ class courseCtrl {
 												}
 												else {
 													#Error adding course
-													$this -> errors -> error_add_course($_GET['nombre']);
+													$this -> errors -> error_add_course($_GET['subject']);
 												}
 											}
 											else {
