@@ -1,11 +1,11 @@
 <?php
 
 #Show the Student Courses and Grades
-	echo 'Codigo Del Alumno: ',$grades_info['studentid'],'</br>';
-	echo 'Nombre: ',$grades_info['name'],'</br>';
-	echo 'Carrera: ',$grades_info['career'],'</br>';
-	while (list($key,$student) = each($grades_info['grades'])) {
-		echo $student['materia'],' | ',$student['calificacion'],'</br>';
+	echo 'Codigo Del Alumno: ',$grades_info['codigo'],'</br>';
+	echo 'Nombre: ',$grades_info['nombre'],'</br>';
+	echo 'Carrera: ',$grades_info['carrera'],'</br></br></br>';
+	while ((list( ,$materia) = each($grades_info['materia'])) && (list( ,$calificacion) = each($grades_info['calificacion']))) {
+		echo $materia,' | ',$calificacion,'</br>';
 	}
 
 ?>

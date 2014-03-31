@@ -45,6 +45,8 @@ class studentMdl {
 			}
 			$result -> close();
 		}
+		else
+			return false;
 
 		#Add Student to System
 		$prepare = "INSERT INTO users_student VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -66,29 +68,130 @@ class studentMdl {
 		return $return_array;
 	}
 
-	function view_student_grades($studentid,$cicle) { #
+	function view_student_grades($codigo_alumno,$ciclo) { #
 		#Gets the Student ID and Cicle
 		#Goes to the DB to search for the Student, and gets all his active courses info
 		#will return array if it found it, false if not.
-		$grades_info['name'] = "Carlos Mauricio Romero Pacheco";
-		$grades_info['studentid'] = "211213995";
-		$grades_info['career'] = "Computacion";
-		$grades_info['grades'][] = array ("materia" => "Taller de Compiladores", "calificacion" => 86.4);
-		$grades_info['grades'][]= array ("materia" => "Topicos Selectos de Computacion III","calificacion" => 81.2);
-		$grades_info['grades'][] = array ("materia" => "Organizacion de Computadoras","calificacion" => 96);
-		$grades_info['grades'][] = array ("materia" => "Programacion Logica y Funcional","calificacion" => 78.8);
-		return $grades_info;
+
+		$return_array = array();
+
+		#Check if Student is in the database
+		#If it is, get his information
+		$statement = "SELECT us.userid AS codigo, CONCAT( us.nombre,  ' ', us.primer_a,  ' ', us.segundo_a ) AS nombre, c.nombre AS carrera
+					  FROM users_student AS us
+					  JOIN Carrera AS c ON c.clave_carrera = us.clave_carrera
+					  WHERE userid =  '$codigo_alumno'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				if ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array['nombre'] = $query['nombre'];
+					$return_array['carrera'] = $query['carrera'];
+					$return_array['codigo'] = $query['codigo'];
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+			$result -> close();
+		}
+
+		#Get student grades
+		$statement = "SELECT m.nombre as materia, l.calificacion as calificacion
+					  FROM Lista AS l
+					  JOIN Curso AS c ON c.clave_curso = l.clave_curso
+					  JOIN Materia AS m ON m.clave_materia = c.clave_materia
+					  WHERE l.codigo_alumno =  '$codigo_alumno'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				while ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array['materia'][] = $query['materia'];
+					$return_array['calificacion'][] = $query['calificacion'];
+				}
+			}
+			else {
+				return false;
+			}
+			$result -> close();
+		}
+		if (sizeof($return_array) > 0)
+			return $return_array;
+		else
+			return false;
 	}
 
-	function view_student_course($studentid,$courseid) { #
+	function view_student_course($codigo_alumno,$ciclo,$nrc) { #
 		#Gets the Student ID and Course
 		#Goes to the DB to search for the Student, and gets all his course information (attendance and grades)
 		#will return array if it found it, false if not.
-		$course_info['name'] = "Carlos Mauricio Romero Pacheco";
-		$course_info['studentid'] = "211213995";
-		$course_info['career'] = "Computacion";
-		$course_info['grades'][] = array ("materia" => "Taller de Compiladores", "calificacion" => 86.4,"asistencia" => " * | * | * | * | * | * | * | * |");
-		return $course_info;
+
+		$return_array = array();
+
+		#Check if Student is in the database
+		#If it is, get his information
+		$statement = "SELECT us.userid AS codigo, CONCAT( us.nombre,  ' ', us.primer_a,  ' ', us.segundo_a ) AS nombre, c.nombre AS carrera
+					  FROM users_student AS us
+					  JOIN Carrera AS c ON c.clave_carrera = us.clave_carrera
+					  WHERE userid =  '$codigo_alumno'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				if ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array['nombre'] = $query['nombre'];
+					$return_array['carrera'] = $query['carrera'];
+					$return_array['codigo'] = $query['codigo'];
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+			$result -> close();
+		}
+
+
+		#Check if Student is enrolled in the course and cicle given
+		$statement = "SELECT clave_curso FROM Curso WHERE nrc = '$nrc' && clave_ciclo = '$ciclo'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				if ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					$clave_curso = $query['clave_curso'];
+				}
+				else {
+					return false;
+				}
+			}
+			$result -> close();
+		}
+		else
+			return false;
+
+
+		#Get student attendance
+		$statement = "SELECT asistencia,dia From Asistencia where clave_curso = '$clave_curso' AND codigo_alumno = '$codigo_alumno'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				while ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array['dia'][] = $query['dia'];
+					$return_array['asistencia'][] = $query['asistencia'];
+				}
+			$result -> close();
+		}
+
+
+
+		if (sizeof($return_array) > 0)
+			return $return_array;
+		else
+			return false;
 	}
 
 	function modify_status($userid,$value) { 

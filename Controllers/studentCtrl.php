@@ -215,19 +215,32 @@ class studentCtrl {
 					$session = $this -> validation -> active_session();
 					#Check account privileges
 					if ($session >= 1) {
+						if ($session > 1) {
+							if (isset($_GET['studentid'])) {
+								if ($this -> validation -> validate_userid($_GET['studentid']) == 1) {
+									$student_id = $_GET['studentid'];	
+								}
+								else {
+									$this -> errors -> not_valid_userid('Student');
+									die();
+								}
+							}
+							else {
+								$this -> errors -> not_found_input('Student ID');
+								die();
+							}
+						}
+						else
+							$student_id = $_SESSION['userid'];
 						#User is allowed to execute action
 					#Check if cicle exists
 					if (isset($_GET['cicle'])) {
 						#Validate if cicle is valid
 						if ($this -> validation -> validate_cicle($_GET['cicle'])) {
-							#Check if Student ID exists
-							if (isset($_GET['studentid'])) {
-								#Validate if Student ID is valid
-								if ($this -> validation -> validate_sid($_GET['studentid'])) {
-									#Check if Course ID exists
-									if (isset($_GET['courseid'])) {
-										if ($this -> validation -> validate_courseid($_GET['courseid'])) {
-											$course_info = $this -> obj_mdl -> view_student_course($_GET['studentid'],$_GET['courseid']);
+									#Check if NRC exists
+									if (isset($_GET['nrc'])) {
+										if ($this -> validation -> validate_nrc($_GET['nrc'])) {
+											$course_info = $this -> obj_mdl -> view_student_course($_GET['studentid'],$_GET['cicle'],$_GET['nrc']);
 											if (is_array($course_info)) {
 												#Get the View
 												require('Views/student_courseview.php');
@@ -238,8 +251,8 @@ class studentCtrl {
 											}
 										}
 										else {
-											#Course ID is not valid
-											$this -> errors -> not_valid_input($_GET['courseid'],'Course ID');
+											#Course NRC is not valid
+											$this -> errors -> not_valid_input($_GET['nrc'],'NRC');
 										}
 									}
 									else {
@@ -256,34 +269,24 @@ class studentCtrl {
 									}
 								}
 								else {
-									#Student ID is not valid
-									$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+									#Cicle is not valid
+									$this -> errors -> not_valid_format($_GET['cicle'],'cicle');
 								}
 							}
 							else {
-								#Student ID was not input
-								$this -> errors -> not_found_input('Student ID');
+								#Cicle was not input
+								$this -> errors -> not_found_input('Cicle');
 							}
 						}
-						else {
-							#Cicle is not valid
-							$this -> errors -> not_valid_format($_GET['cicle'],'cicle');
+						else if ($session == false) {
+							#Session is not started
+							$this -> errors -> not_logged_in();
 						}
-					}
-					else {
-						#Cicle was not input
-						$this -> errors -> not_found_input('Cicle');
-					}
-					}
-					else if ($session == false) {
-						#Session is not started
-						$this -> errors -> not_logged_in();
-					}
-					else {
-						#User is not allowed to execute action
-						$this -> errors -> not_valid_usertype();
-					}
-					break;
+						else {
+							#User is not allowed to execute action
+							$this -> errors -> not_valid_usertype();
+						}
+						break;
 
 				default:
 					#Activity is not valid
