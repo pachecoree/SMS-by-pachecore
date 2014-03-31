@@ -295,11 +295,12 @@ class courseCtrl {
 					#Check account privileges
 					if ($session >= 2) {
 						#User is allowed to execute action
-					#Check if course exists
-					if (isset($_GET['courseid'])) {
-						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+					#Check if NRC exists
+					if (isset($_GET['nrc'])) {
+						#validate NRC
+						if ($this -> validation -> validate_nrc($_GET['nrc'])) {
 							#Callback to the view function
-							$grade_array = $this -> mdl_obj -> view_course_grade($_GET['courseid']);
+							$grade_array = $this -> mdl_obj -> view_course_grade($_GET['nrc']);
 							if (is_array($grade_array)) {
 								#Get the View
 								require('Views/grade_listview.php');
@@ -310,13 +311,13 @@ class courseCtrl {
 							}
 						}
 						else {
-							#Course ID is not valid
-							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+							#NRC is not valid
+							$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
 						}
 					}
 					else {
-						#Course ID was not input
-						$this -> errors -> not_found_input('Course ID');
+						#NRC was not input
+						$this -> errors -> not_found_input('NRC');
 					}
 					}
 					else if ($session == false) {

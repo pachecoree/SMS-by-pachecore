@@ -89,14 +89,18 @@
 						session_start();
 						$this -> end_session();
 						echo 'Signed out';
+                        break;
 					
 					default:
-						//
+						#Activity  was not valid
+						echo 'Activity ',$_GET['actl'],' is not valid';
 						break;
 				}
 			}
 			else {
-				//
+				#Activity was not input
+				echo 'Activity not found';
+				die();
 			}
 		}
 

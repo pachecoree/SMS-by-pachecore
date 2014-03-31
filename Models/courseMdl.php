@@ -245,6 +245,22 @@ class courseMdl {
 	 	if ($clave_ciclo == false) 
 	 		return false;
 
+		#Check if NRC exists , and if it does compare teacher_id
+		$statement = "SELECT clave_maestro FROM Curso where nrc = '$nrc' AND ciclo_actual = '$clave_ciclo'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					if ($_SESSION['type'] == 2 && !(strcmp($_SESSION['userid'], $query['clave_maestro']))) {
+						return false;
+					}
+				}
+				else {
+					return false;
+				}
+			$result -> close();
+		}
+
 	 	$clave_curso = $nrc.$clave_ciclo;
 		$statement = "select codigo_alumno,asistencia,dia From Asistencia where clave_curso = '$clave_curso'";
 		$query = $this -> db_driver;
@@ -263,16 +279,56 @@ class courseMdl {
 			return false;
 	}
 
-	function view_course_grade($courseid) {
+	function view_course_grade($nrc) {
 		#Go to the DB and get all students in actual the course
 		#Will return false if the course was not found, or return an array containing all students in
 		#the course with grades
-		$course['subject'] = "Ingenieria de Software";
-		$course['section'] = "D01";
-		$course['nrc'] = "14580";
-		$course['grade'][] = array ("studentid" => 211213995, "name" => "Romero Pacheco Carlos Mauricio","grade" => "9.1");
-		$course['grade'][] = array ("studentid" => 210519152, "name" => "Villanueva Venegas Neo Octavio","grade" => "7.3");
-		return $course;
+		$return_array = array();
+
+	 	#Get actual ciclo from DB
+	 	$clave_ciclo = $this -> std_obj -> get_cicle();
+	 	#If the returned value from get_cicle is false, return false to mark error
+	 	if ($clave_ciclo == false) 
+	 		return false;
+
+		#Check if NRC exists , and if it does compare teacher_id
+		$statement = "SELECT clave_maestro FROM Curso where nrc = '$nrc' AND ciclo_actual = '$clave_ciclo'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					if ($_SESSION['type'] == 2 && !(strcmp($_SESSION['userid'], $query['clave_maestro']))) {
+						return false;
+					}
+				}
+				else {
+					return false;
+				}
+			$result -> close();
+		}
+
+		$clave_curso = $nrc.$clave_ciclo;
+		$statement = "SELECT c.codigo_alumno as codigo, r.actividad as actividad,
+		r.porcentaje as porcentaje, ((c.calificacion * r.porcentaje)/10) as puntos, l.calificacion as calificacion
+	  	FROM Calificacion c JOIN Rubro as r ON c.clave_rubro = r.clave_rubro
+		JOIN Lista as l ON l.codigo_alumno = c.codigo_alumno WHERE c.clave_curso = '$clave_curso'";
+
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				while ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+			 		$return_array[$query['codigo']]['actividad'][] = $query['actividad'];
+			 		$return_array[$query['codigo']]['porcentaje'][] = $query['porcentaje'];
+			 		$return_array[$query['codigo']]['puntos'][] = $query['puntos'];
+			 		$return_array[$query['codigo']]['calificacion'] = $query['calificacion'];
+			  	}
+			}
+			$result -> close();
+		}
+		if (sizeof($return_array) > 0)
+			return $return_array;
+		else
+			return false;
 	}
 
 	function add_field_to_course($field_array) {
