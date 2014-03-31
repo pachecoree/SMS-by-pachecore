@@ -31,7 +31,6 @@
 					$table1 = 'admin';
 					$type = 3;
 				}
-				$userid = (int) $userid;
 				$table = $table.$table1;
 				if ($usuario = $this -> mdl_obj -> get_user($userid,$_GET['password'],$table,$type)) {
 					#Userid is correct
@@ -49,8 +48,9 @@
 			return false;
 		}
 
-		function start_session($userid,$type) {
+		function start_session($user,$type,$userid) {
 			$_SESSION['started'] = true;
+			$_SESSION['user'] = $user;
 			$_SESSION['userid'] = $userid;
 			$_SESSION['type'] = $type;
 		}
@@ -72,7 +72,7 @@
 							}
 							else {
 								if ($usuario = $this -> validate_user()) {
-									$this -> start_session($usuario['usuario'],$usuario['type']);
+									$this -> start_session($usuario['usuario'],$usuario['type'],$usuario['userid']);
 									require('Views/loginCorrectly.php');
 								}
 								else {

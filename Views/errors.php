@@ -94,6 +94,18 @@ class errors {
 	function not_valid_usertype() {
 		echo 'You do not have the privileges to perform that action';
 	}
+
+	function not_valid_userid($user) {
+		echo $user, ' ID is not valid';
+	}
+
+	function student_in_course($studentid) {
+		echo 'Student is already enrolled in this course';
+	}
+
+	function module_disabled() {
+		echo 'This module has been disabled';
+	}
 }
 
 

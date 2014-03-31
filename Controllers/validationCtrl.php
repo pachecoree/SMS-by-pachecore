@@ -53,7 +53,7 @@ class validationCtrl {
 	function validate_subject($subject) {
 		#Check if format was correctly input
 		return true; //mientras temporal
-		$pattern = '/^[a-z]{1}[a-z0-9][0-9]{3}-d[0-9]{2}$/i';
+		$pattern = '/^[a-z]{1}[a-z0-9][0-9]{3}$/i';
 		if (preg_match($pattern,$subject) == 1) {
 			return true;
 		}
@@ -84,7 +84,7 @@ class validationCtrl {
 
 	function validate_percentage($percentage) {
 		#Check if format was correctly input
-		$pattern = '/(^[1-9]$)|(^[1-9][0-9]$)|(^100$)/';
+		$pattern = '/(^[0]{0,1}[1-9]$)|(^[1-9][0-9]$)|(^100$)/';
 		if (preg_match($pattern,$percentage) == 1) {
 			return true;
 		}
@@ -93,10 +93,10 @@ class validationCtrl {
 	}
 
 	function validate_attendance($value) {
-		if (strcmp(strtolower($value), 'asistencia') == 0) {
+		if ($value == 1) {
 			return 1;
 		}
-		if (strcmp(strtolower($value),'falta') == 0) {
+		if ($value == 0) {
 			return 0;
 		}
 		#Not valid value
@@ -141,10 +141,10 @@ class validationCtrl {
 	}
 
     function validate_studentstatus($status) {
-		if (strcmp(strtolower($status), 'inactivo') == 0) {
+		if ($status == 0) {
 			return 0;
 		} 
-		if (strcmp(strtolower($status), 'activo') == 0) {
+		if ($status == 1) {
 			return 1;
 		} 
 		return 2;
@@ -194,7 +194,7 @@ class validationCtrl {
 		if (preg_match($pattern,$email) == 1) {
 			return true;
 		}
-		#Subject name is not valid
+		#Email is not valid
 		return false;
 	}
 	
@@ -209,32 +209,51 @@ class validationCtrl {
 		return false;
 	}
 
+	function validate_career($career) {
+		if ($career > 0 && $career <= 14) {
+			return true;
+		}
+		return false;
+	}
+
 	function validate_courseid($courseid) {
 		#Check if format was correctly input
 		$pattern = '/^[0-9]{1,6}$/';
 		if (preg_match($pattern,$courseid) == 1) {
 			return true;
 		}
-		#github Account is not valid
 		return false;
 	}
 
-	function validate_schedule($dias,$horas,$horario) {
-		foreach ($dias as $key => $value) {
-			if ( !($value >= 1) && !($value <= 6)) {
+	function validate_nocol($nocol) {
+		#Check if number of columns is between 0 and 10
+		if ($nocol >= 0 && $nocol <=10)
+			return true;
+		#Number of columns is not valid
+		return false;
+	}
+
+	function validate_schedule($day,$hours,$schedule) {
+		$dias_clase = array();
+		while ((list( ,$horario) = each($schedule)) && (list( ,$dias) = each($day)) && (list( ,$horas) = each($hours))) {
+			foreach ($dias_clase as $value) {
+				if ($value == $dias) {
+					return false;
+				}
+			}
+			if (($dias < 1) || ($dias > 6)) {
 				return false;
 			}
-		}
-		foreach ($horas as $key => $value) {
-			if ( !($value > 1) && !($value <7)) {
+			if (($horas < 1) || ($horas > 6)) {
 				return false;
 			}
-		}
-		
-		foreach ($horario as $key => $value) {
-			if (preg_match('/^(([0][789])|([1][0-9])|([2][0-2]))[0][0][:](([0][789])|([1][0-9])|([2][0-2]))[5][5]$/', $value) == 0) {
+			if (($horario < 1) || ($horario >15))  {
 				return false;
 			}
+			if (($horario+($horas-1)) > 15) {
+				return false;
+			}
+			$dias_clase[] = $dias;
 		}
 		return true;
 	}

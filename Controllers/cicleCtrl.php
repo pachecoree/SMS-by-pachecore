@@ -1,6 +1,7 @@
 <?php
 
-class cicleCtrl {
+
+class cicleCtrl{
 
 	function __construct($driver) {
 		#Constructor
@@ -110,6 +111,9 @@ class cicleCtrl {
 					break;
 		
 			case 'modify':
+					#Disabling module
+					$this -> errors -> module_disabled();
+					die();
 					$session = $this -> validation -> active_session();
 					if ($session >= 3) {
 						#Check if cicle exists

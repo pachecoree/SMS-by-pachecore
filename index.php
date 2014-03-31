@@ -10,8 +10,8 @@
 
 	#Check if the controller exists
 	if (isset($_GET['ctrl'])) {
-		//require('Models/database_config.inc');
-		$db_driver = new mysqli('localhost','root','tortas','SMS');
+		require('Models/database_config.inc');
+		$db_driver = new mysqli($conex,$user,$pass,$db,$port);
 		if ($db_driver -> connect_error) {
 			die("Error al conectar a la base de datos");
 		}
@@ -33,15 +33,15 @@
 			case 'course':
 				#Load course controller
 				require('Controllers/courseCtrl.php');
-				$ctrl = new courseCtrl();
-				$ctrl -> run($db_driver);
+				$ctrl = new courseCtrl($db_driver);
+				$ctrl -> run();
 				
 				break;
 
 			case 'student':
 				#Load student controller
 				require('Controllers/studentCtrl.php');
-				$ctrl = new studentCtrl();
+				$ctrl = new studentCtrl($db_driver);
 				$ctrl -> run();
 				break;
 
