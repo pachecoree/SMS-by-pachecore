@@ -258,27 +258,27 @@ class courseCtrl {
 					if ($session >= 2) {
 						#User is allowed to execute action
 					#Check if course exists
-					if (isset($_GET['courseid'])) {
-						if ($this -> validation -> validate_courseid($_GET['courseid'])) {
+					if (isset($_GET['nrc'])) {
+						if ($this -> validation -> validate_courseid($_GET['nrc'])) {
 							#Callback to the view function
-							$attendance_array = $this -> mdl_obj -> view_course_attendance($_GET['courseid']);
+							$attendance_array = $this -> mdl_obj -> view_course_attendance($_GET['nrc']);
 							if (is_array($attendance_array)) {
 								#Get the View
 								require('Views/attendance_listview.php');
 							}
 							else {
 								#The course was not found
-								$this -> errors -> error_query_list($attendance_array);
+								$this -> errors -> error_query_list($_GET['nrc']);
 							}
 						}
 						else {
 							#Course ID is not valid
-							$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
+							$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
 						}
 					}
 					else {
 						#Course ID was not input
-						$this -> errors -> not_found_input('Course ID');
+						$this -> errors -> not_found_input('NRC');
 					}
 					}
 					else if ($session == false) {

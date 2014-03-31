@@ -211,9 +211,9 @@ class courseMdl {
 					//
 					$id_rubro = (int)$query['clave_rubro'];
 					$numero_columnas = (int) $query['numero_columnas'];
-					$prepare = "INSERT INTO Calificacion (clave_curso,clave_rubro,codigo_alumno) VALUES (?,?,?)";
+					$prepare = "INSERT INTO Calificacion (clave_curso,clave_rubro,codigo_alumno,calificacion) VALUES (?,?,?,?)";
 					if ($insert = $this -> db_driver -> prepare($prepare)) {
-						$insert -> bind_param("sis",$clave_curso,$id_rubro,$studentid);
+						$insert -> bind_param("sisi",$clave_curso,$id_rubro,$studentid,$i=0);
 						$insert -> execute();
 					}
 					if ($numero_columnas > 0) {
@@ -233,16 +233,34 @@ class courseMdl {
 	}
 
 
-	function view_course_attendance($courseid) {
+	function view_course_attendance($nrc) {
 		#Go to the DB and get all students in actual the course
 		#Will return false if the course was not found, or return an array containing all students in
 		#the course and the attendance list
-		$course['subject'] = "Taller de Compiladores";
-		$course['section'] = "D04";
-		$course['nrc'] = "91780";
-		$course['attendance'][] = array ("studentid" => 211213995, "name" => "Romero Pacheco Carlos Mauricio","attendance" => "* | * | / | * | / | * | * | *");
-		$course['attendance'][] = array ("studentid" => 210519152, "name" => "Villanueva Venegas Neo Octavio","attendance" => "/ | / | / | * | / | * | * | *");
-		return $course;
+		$return_array = array();
+
+	 	#Get actual ciclo from DB
+	 	$clave_ciclo = $this -> std_obj -> get_cicle();
+	 	#If the returned value from get_cicle is false, return false to mark error
+	 	if ($clave_ciclo == false) 
+	 		return false;
+
+	 	$clave_curso = $nrc.$clave_ciclo;
+		$statement = "select codigo_alumno,asistencia,dia From Asistencia where clave_curso = '$clave_curso'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				while ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array[$query['codigo_alumno']]['dia'][] = $query['dia'];
+					$return_array[$query['codigo_alumno']]['asistencia'][] = $query['asistencia'];
+				}
+			$result -> close();
+		}
+
+		if (sizeof($return_array) > 0)
+			return $return_array;
+		else
+			return false;
 	}
 
 	function view_course_grade($courseid) {
