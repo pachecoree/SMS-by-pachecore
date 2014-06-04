@@ -1,0 +1,45 @@
+<body>
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+  <div class="container table-responsive table-condensed" id="contenedor_peq">
+		<h2>Buscar Alumno</h2>
+      <table class="table">
+        <td>
+          <label for="busccodigo">Buscar por Codigo&nbsp;&nbsp;&nbsp;</label>
+          <input type="radio" name="radiobusc" id="busccodigo" value="codigo" checked="checked"></input>
+        </td>
+        <td>
+          <label for="buscnombre">Buscar por Nombre&nbsp;&nbsp;&nbsp;</label>
+          <input type="radio" name="radiobusc" id="buscnombre" value="nombre"></input>
+        </td>
+        <tr>
+          <td colspan="2"><input onkeyup="toUpper(this)" class="form-control" type="text" id="txtbuscar" name="txtbuscar"></input></td>
+        </tr>
+      </table>
+      <table class="table">
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><button onClick="buscarAlumno()" class="btn btn-primary btn-block" type="button">Buscar</button></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+  </div>
+  <div class="container table-responsive table-condensed" id="contenedor_med">
+      <table class="table" id="alumnos">
+        
+      </table>
+  </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+  </body>

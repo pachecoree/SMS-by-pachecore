@@ -3,19 +3,44 @@
 class validationCtrl {
 
 	function __construct () {
-
 	}
 
-	function validate_date($date) {
-		$pattern = '/^[0-9]{1,2}[\/][0-9]{1,2}[\/][0-9]{4}$/';
+/*	function validate_date($date) {
+		$pattern = '/^[0-9]{1,2}[-][0-9]{1,2}[-][0-9]{4}$/';
 		if (preg_match($pattern, $date) == 1) {
-			list($day, $month, $year) = explode("/", $date);
+			list($day, $month, $year) = explode("-", $date);
 			$date = "$month/$day/$year";
 			if (checkdate($month, $day, $year)) {
 		 		return new DateTime($date);
 		 	}
 		 	else 
 		 		return false;
+		}
+		return false;
+	}*/
+
+	function validate_date($date) {
+		//$pattern = '/^[0-9]{1,2}[-][0-9]{1,2}[-][0-9]{4}$/';
+		//if (preg_match($pattern, $date) == 1) {
+			list($year, $month, $day) = explode("-", $date);
+			$date = "$month/$day/$year";
+			if (checkdate($month, $day, $year)) {
+		 		return new DateTime($date);
+		 	}
+		 	else 
+		 		return false;
+		//}
+		return false;
+	}
+
+	function validate_nonworking($date,$fechainicial,$fechafinal) {
+		list($year,$month,$day) = explode("-",$date);
+		$date = "$month/$day/$year";
+		if (checkdate($month,$day, $year)) {
+			$date = new DateTime($date);
+			if ($date >= $fechainicial && $date <= $fechafinal) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -32,7 +57,7 @@ class validationCtrl {
 
 	function validate_cicle($cicle) {
 		#Check if format was correctly input
-		$pattern = '/^[2][0-9]{3}[a-z]$/i';
+		$pattern = '/^[2][0-9]{3}[AB]$/i';
 		if (preg_match($pattern,$cicle) == 1) {
 			return true;
 		}

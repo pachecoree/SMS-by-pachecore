@@ -36,7 +36,7 @@ class courseMdl {
 		}
 		
 		#Check if NRC is not already registered in a course on this cicle and
-		#Check if Section is not already registerd to a subject on this cicle
+		#Check if Section is not already registered to a subject on this cicle
 		$query = $this -> db_driver;
 		$statement = "SELECT nrc FROM Curso WHERE (clave_ciclo = '$clave_ciclo' AND nrc = '$nrc') OR (clave_ciclo = '$clave_ciclo' AND clave_materia = '$clave_materia' AND seccion = '$seccion')";
 		if ($query -> real_query($statement)) {
@@ -61,7 +61,7 @@ class courseMdl {
 
 		#Everything is set up to add the Course to the Data Base
 		#First we add the course to 'Curso' table
-		#Create array where we will return all informtation
+		#Create array where we will return all information
 		$return_array = array();
 		$prepare = "INSERT INTO Curso VALUES(?,?,?,?,?,?)";
 		if ($query = $this -> db_driver->prepare($prepare)) {
@@ -90,7 +90,7 @@ class courseMdl {
 
 		#Get values to create course_info array with all information from database
 	    #
-		$return_array = $this -> std_obj -> crear_curso_datos($return_array,$clave_curso);
+		$return_array = $this -> std_obj -> crear_curso_datos($clave_curso);
 		if ($return_array == false)
 			return false;
 
@@ -99,7 +99,7 @@ class courseMdl {
 
 
 
-	function add_student_to_course($studentid,$nrc,$teacher_id) {
+	function add_student_to_course($studentid,$nrc) {
 		#Go to the DB and get student to be added
 		#Will return false if the student was not found, or return full name if an error ocurred while adding
 		#Return array with student information to confirm the it was added to a course
@@ -149,11 +149,6 @@ class courseMdl {
 				}
 			$result -> close();
 		}
-
-		#Check if Teacher is imparting that course
-	    #IF false , teacher is not link to that course
-		if (!($this -> std_obj -> maestro_curso($clave_curso,$teacher_id)))
-			return false;
 
 		#Check if Student is in the course
 		$statement = "SELECT * FROM Lista WHERE clave_curso = '$clave_curso' AND codigo_alumno='$studentid'";
@@ -233,19 +228,14 @@ class courseMdl {
 	}
 
 
-	function view_course_attendance($nrc) {
+	function view_course_attendance($nrc,$clave_ciclo) {
 		#Go to the DB and get all students in actual the course
 		#Will return false if the course was not found, or return an array containing all students in
 		#the course and the attendance list
 		$return_array = array();
 
-	 	#Get actual ciclo from DB
-	 	$clave_ciclo = $this -> std_obj -> get_cicle();
-	 	#If the returned value from get_cicle is false, return false to mark error
-	 	if ($clave_ciclo == false) 
-	 		return false;
 
-		#Check if NRC exists , and if it does compare teacher_id
+		/*#Check if NRC exists , and if it does compare teacher_id
 		$statement = "SELECT clave_maestro FROM Curso where nrc = '$nrc' AND ciclo_actual = '$clave_ciclo'";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
@@ -259,10 +249,11 @@ class courseMdl {
 					return false;
 				}
 			$result -> close();
-		}
+		}*/
+
 
 	 	$clave_curso = $nrc.$clave_ciclo;
-		$statement = "select codigo_alumno,asistencia,dia From Asistencia where clave_curso = '$clave_curso'";
+		$statement = "SELECT codigo_alumno,asistencia,dia From Asistencia where clave_curso = '$clave_curso' ORDER BY dia ASC";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
 			if ($result =$query -> store_result())
@@ -279,19 +270,41 @@ class courseMdl {
 			return false;
 	}
 
-	function view_course_grade($nrc) {
+	function view_course_students($nrc,$clave_ciclo) {
+		$clave_curso = $nrc.$clave_ciclo;
+		$return_array = array();
+		$i = 1;
+		$statement = "SELECT CONCAT(us.primer_a,' ',us.segundo_a,' ',us.nombre) as nombre, us.userid as codigo, c.nombre as carrera
+					  FROM Lista AS l
+                      JOIN users_student AS us ON us.userid = l.codigo_alumno
+					  JOIN Carrera AS c ON c.clave_carrera = us.clave_carrera
+					  WHERE l.clave_curso = '$clave_curso' ORDER BY nombre ASC";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				while ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array['nolista'][] = $i++;
+					$return_array['codigo'][] = $query['codigo'];
+					$return_array['nombre'][] = $query['nombre'];
+					$return_array['carrera'][] = $query['carrera'];
+				}
+			}
+			else {
+				return false;
+			}
+			$result -> close();
+		}
+
+		return $return_array;
+	}
+
+	function view_course_grade($nrc,$clave_ciclo) {
 		#Go to the DB and get all students in actual the course
 		#Will return false if the course was not found, or return an array containing all students in
 		#the course with grades
 		$return_array = array();
 
-	 	#Get actual ciclo from DB
-	 	$clave_ciclo = $this -> std_obj -> get_cicle();
-	 	#If the returned value from get_cicle is false, return false to mark error
-	 	if ($clave_ciclo == false) 
-	 		return false;
-
-		#Check if NRC exists , and if it does compare teacher_id
+		/*#Check if NRC exists , and if it does compare teacher_id
 		$statement = "SELECT clave_maestro FROM Curso where nrc = '$nrc' AND ciclo_actual = '$clave_ciclo'";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
@@ -305,14 +318,18 @@ class courseMdl {
 					return false;
 				}
 			$result -> close();
-		}
+		}*/
 
 		$clave_curso = $nrc.$clave_ciclo;
-		$statement = "SELECT c.codigo_alumno as codigo, r.actividad as actividad,
+		/*$statement = "SELECT c.codigo_alumno as codigo, r.actividad as actividad,
 		r.porcentaje as porcentaje, ((c.calificacion * r.porcentaje)/10) as puntos, l.calificacion as calificacion
 	  	FROM Calificacion c JOIN Rubro as r ON c.clave_rubro = r.clave_rubro
 		JOIN Lista as l ON l.codigo_alumno = c.codigo_alumno WHERE c.clave_curso = '$clave_curso'";
-
+		**/
+		$statement = "SELECT c.codigo_alumno as codigo, r.actividad as actividad,
+		r.porcentaje as porcentaje,c.calificacion as calificacion,((c.calificacion * r.porcentaje)/10) as puntos
+	  	FROM Calificacion c JOIN Rubro as r ON c.clave_rubro = r.clave_rubro
+		WHERE c.clave_curso ='$clave_curso' ORDER BY r.clave_rubro ASC";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
 			if ($result = $query -> store_result()) {
@@ -320,7 +337,16 @@ class courseMdl {
 			 		$return_array[$query['codigo']]['actividad'][] = $query['actividad'];
 			 		$return_array[$query['codigo']]['porcentaje'][] = $query['porcentaje'];
 			 		$return_array[$query['codigo']]['puntos'][] = $query['puntos'];
-			 		$return_array[$query['codigo']]['calificacion'] = $query['calificacion'];
+			 		//$return_array[$query['codigo']]['calificacion'] = $query['calificacion'];
+			 		$statement1 = "SELECT calificacion FROM Lista WHERE codigo_alumno = '".$query['codigo']."' AND clave_curso = '".$clave_curso."' ORDER BY codigo_alumno ASC";
+			 		$query1 = $this -> db_driver;
+			 		if ($query1 -> real_query($statement1)) {
+			 			if ($result1 = $query1 -> store_result()) {
+			 				if ($query1 = $result1 -> fetch_array(MYSQLI_ASSOC)) {
+			 					$return_array[$query['codigo']]['calificacion'] = $query1['calificacion'];
+			 				}
+			 			}
+			 		}
 			  	}
 			}
 			$result -> close();
@@ -341,18 +367,9 @@ class courseMdl {
 		$return_array = array();
 
 		$nocol = $return_array['nocol'] = $field_array['nocol'];
-		$clave_maestro = $field_array['teacher_id'];
 		$nrc = $field_array['nrc'];
 		$porcentaje = $return_array['porcentaje'] = $field_array['percentage'];
 		$actividad = $return_array['actividad'] = $field_array['field'];
-		#If the session was started by an administrator 
-		#Check if the Teacher ID exists in database
-		if ($_SESSION['type'] == 3)
-			$clave_maestro = $this -> std_obj -> get_teacher($clave_maestro);
-		#if the returned value from get_teacher is false, return false to mark error
-		if ($clave_maestro == false)
-			return false;
-		#IF returned value is not false, teacher id exists
 
 		#Get actual ciclo from DB
 	 	$ciclo = $this -> std_obj -> get_cicle();
@@ -370,6 +387,7 @@ class courseMdl {
 			if ($result =$query -> store_result())
 				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
 					$clave_curso = $nrc.$ciclo;
+					$return_array['clave_curso'] = $clave_curso;
 					$return_array['clave_materia'] = $query['clave_materia'];
 					$return_array['materia'] = $query['materia'];
 				}
@@ -378,11 +396,6 @@ class courseMdl {
 				}
 			$result -> close();
 		}
-
-		#Check if Teacher is imparting that course
-	    #IF false , teacher is not link to that course
-		if (!($this -> std_obj -> maestro_curso($clave_curso,$clave_maestro)))
-			return false;
 
 		#The system restricts adding fields to course while there are students enrolled on it
 		#We check if there any students enrolled
@@ -454,43 +467,16 @@ class courseMdl {
 		return $sheet_array;
 	}
 
-	function check_studentsid($studentids_array,$nrc,$asistencia,$dia,$teacher_id) { #Attendance
-		$return_array = array();
-
-		#Get actual ciclo from DB
-	 	$ciclo = $this -> std_obj -> get_cicle();
-	 	#If the returned value from get_cicle is false, return false to mark error
-	 	if ($ciclo == false)
-	 		return false;
-
-	 	#Check if NRC is a course this cicle , and check if teacher is giving that course
-		$statement = "SELECT nrc FROM Curso WHERE nrc = '$nrc' AND clave_maestro = '$teacher_id'";
-		$query = $this -> db_driver;
-		if ($query -> real_query($statement)) {
-			if ($result = $query -> store_result())
-				if (!$query = $result -> fetch_array(MYSQLI_ASSOC)) {
-					return false;
-				}
-			$result -> close();
+	function check_studentsid($clave_curso,$codigo,$dia,$valor) { 
+		#Attendance
+		#Go to the DB ad check if student is in course
+		#If found, add to return_array
+		#Update Student Status
+		$prepare = "UPDATE Asistencia SET asistencia = ? WHERE codigo_alumno = ? AND dia = ? AND clave_curso = ?";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("isss",$valor,$codigo,$dia,$clave_curso);
+			$query -> execute();
 		}
-
-	 	$clave_curso = $nrc.$ciclo;
-
-	 	#Update Asistencia values for each Student received
-		foreach ($studentids_array as $key => $codigo_alumno) {
-			#Go to the DB ad check if student is in course
-			#If found, add to return_array
-			#Update Student Status
-			$prepare = "UPDATE Asistencia SET asistencia = ? WHERE codigo_alumno = ? AND dia = ? AND clave_curso = ?";
-			if ($query = $this -> db_driver -> prepare($prepare)) {
-				$query -> bind_param("isss",$asistencia,$codigo_alumno,$dia,$clave_curso);
-				$query -> execute();
-				if ($query -> affected_rows > 0) {
-					$return_array[] = $codigo_alumno;
-				}
-			}
-		}
-		return $return_array;
 	}
 
 	function clone_course($course_info) {
@@ -546,7 +532,7 @@ class courseMdl {
 
 		#Check if Teacher is imparting that course
 	    #IF false , teacher is not link to that course
-		if (!($this -> std_obj -> maestro_curso($clave_curso,$clave_maestro)))
+		if (!($this -> std_obj -> maestro_curso($curso_anterior,$clave_maestro)))
 			return false;
 
 		#Check if NRC is not already registered in a course on this cicle and
@@ -563,7 +549,6 @@ class courseMdl {
 				}
 			$result -> close();
 		}
-
 
 		#Insert Curso
 		$prepare = "INSERT INTO Curso Values(?,?,?,?,?,?)";
@@ -613,11 +598,110 @@ class courseMdl {
 
 		#Get values to create course_info array with all information from database
 	    #
-		$return_array = $this -> std_obj -> crear_curso_datos($return_array,$clave_curso);
+		$return_array = $this -> std_obj -> crear_curso_datos($clave_curso);
 		if ($return_array == false)
 			return false;
 
 		return $return_array;
+	}
+
+	function get_rubro_details($clave_rubro) {
+		$statement = "SELECT * FROM Rubro WHERE clave_rubro = '$clave_rubro'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					$return_array = array();
+					$return_array['clave_rubro'] = $query['clave_rubro'];
+					$return_array['actividad'] = $query['actividad'];
+					$return_array['porcentaje'] = $query['porcentaje'];
+					$return_array['nocol'] = $query['numero_columnas'];
+					return $return_array;
+				}
+				else return false;
+			$result -> close();
+		}
+	}
+
+	function get_calificacion_rubro($clave_rubro,$studentid) {
+		$statement = "SELECT * FROM Calificacion WHERE clave_rubro = '$clave_rubro' AND codigo_alumno = '$studentid'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					return $query['calificacion'];
+				}
+				else return false;
+			$result -> close();
+		}
+	}
+
+	function get_calificacion_rubros($clave_rubro,$studentid,$clave_curso,$nocol) {
+		$tabla = 'hoja_evaluacion_'.$clave_curso.'_'.$clave_rubro;
+		$statement = "SELECT * FROM $tabla WHERE codigo_alumno = '$studentid'";
+		$col = 1;
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					while ($col <= $nocol) {
+						$calificacion[] = $query['col'.$col++];
+					}
+				}
+				else return false;
+			$result -> close();
+		}
+		return $calificacion;
+	}
+
+	function save_promedio_evsheet($codigo,$clave_curso,$clave_rubro,$calificacion) {
+		$tabla = 'hoja_evaluacion_'.$clave_curso.'_'.$clave_rubro;
+		$prepare = "UPDATE $tabla SET promedio = ? WHERE codigo_alumno = ?";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("ds",$calificacion,$codigo);
+			$query -> execute();
+		}
+	}
+
+	function save_calificacion_rubroev($codigo,$clave_curso,$clave_rubro,$calificacion) {
+		$prepare = "UPDATE Calificacion SET calificacion = ? WHERE codigo_alumno = ? AND clave_rubro = ? AND clave_curso = ?";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("dsss",$calificacion,$codigo,$clave_rubro,$clave_curso);
+			$query -> execute();
+		}
+	}
+
+	function save_calificacion_evsheet($codigo,$clave_curso,$clave_rubro,$calificacion,$nocol) {
+		$tabla = 'hoja_evaluacion_'.$clave_curso.'_'.$clave_rubro;
+		$col = 'col'.$nocol;
+		$prepare = "UPDATE $tabla SET $col = ? WHERE codigo_alumno = ?";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("ds",$calificacion,$codigo);
+			$query -> execute();
+		}
+	}
+
+	function save_calificacion_rubro($grade,$clave_rubro,$codigo_alumno,$clave_curso) {
+		$prepare = "UPDATE Calificacion SET calificacion = ? WHERE clave_rubro = ? AND codigo_alumno = ?";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("dss",$grade,$clave_rubro,$codigo_alumno);
+			$query -> execute();
+		}
+		$statement = "SELECT SUM(((c.calificacion * r.porcentaje) /10 )) AS puntos FROM Calificacion AS c
+		              JOIN Rubro AS r ON r.clave_rubro = c.clave_rubro WHERE c.codigo_alumno ='$codigo_alumno' AND c.clave_curso = '$clave_curso'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					$calificacion = $query['puntos'];
+				}
+			$result -> close();
+		}
+		$prepare = "UPDATE Lista SET calificacion = ? WHERE clave_curso = ? AND codigo_alumno = ?";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("dss",$calificacion,$clave_curso,$codigo_alumno);
+			$query -> execute();
+		}
 	}
 }
 

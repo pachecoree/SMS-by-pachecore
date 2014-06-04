@@ -1,0 +1,77 @@
+<body onload="get_nrc();">
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+   	<form method="post" action="index.php?ctrl=course&act=clone" class="form-horizontal" role="form">
+		<div class="container" id="contenedor_peq1">
+			<h3>Datos del Curso a Clonar</h3>
+	       	<table class="table table-responsive table-striped">
+	       		<tr>
+		            <th>Maestro</th>
+		        </tr>
+		        <tr>
+	       			<td colspan="3">
+		                {{'select_maestros'}}
+	       			</td>
+	       		</tr>
+		        <tr>
+		            <td>
+		                <label for="cicle_c">Ciclo</label>
+		                <select onchange="get_nrc()" id="ciclo" name="cicle_c" type="text" class="form-control"/>
+		                  {{'ciclo'}}
+		                </select>
+		              </form>
+		            </td>
+		            <td>
+		              <label for="txtnrc">Escribe NRC</label>
+		              <input onblur="nrc_input(this)" onkeyup="nrc_input(this)" type="text" class="form-control" id="txtnrc"  maxlength="5"></input>
+		            </td>
+		            <td>
+		              <label for="teacher_id">NRC</label>
+		              <select onchange="nrc_select(this)" id="selnrc" name="nrc_c" type="text" class="form-control"/>
+		              </select>
+		            </td>
+		        </tr>
+	      	</table>
+			<h3>Datos del Curso nuevo</h3>
+	       	<table class="table table-responsive table-striped">
+	       		<tr>
+	       			<td>
+	       				<label for="nrc">NRC</label><input class="form-control" type="text" name="nrc" maxlength="5"></input>
+	       			</td>
+	       			<td>
+	       				<label for="section">Seccion</label>
+	       				<input onkeyup="toUpper(this)" class="form-control" type="text" name="section" maxlength="3"></input>
+	       			</td>
+	       		</tr>
+	            <tr>
+	                <th>Materia</th>
+	                <td>Selecciona la materia</td>
+	                <td>Clave</td>
+	            </tr>
+	            <tr>
+	                <td colspan="2">  
+	                    <select onchange="materia_select(this)" id="selmateria" name="subject" type="text" class="form-control">
+	                    	{{'select_materia'}}
+	                    </select>
+	                </td>
+	                <td>
+	                	<input onKeyUp="materia_input(this)" onblur="materia_input(this)" id="txtmateria" type="text" class="form-control" maxlength="5"/>
+	                </td>
+	            </tr>
+	            <tr>
+	            	<td></td>
+	            	<td><button class="btn btn-primary btn-block" type="submit">Crear Curso</button></td>
+	            </tr>
+	      	</table>
+	  	</div>
+  	</form>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+</body>

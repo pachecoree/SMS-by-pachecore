@@ -10,13 +10,17 @@
 			$this -> errors = new errors();
 			require('Controllers/validationCtrl.php');
 			$this -> validation = new validationCtrl();
+			require('Controllers/templatesCtrl.php');
+			$this -> templateCtrl = new templatesCtrl();
+			require('Controllers/mailCtrl.php');
+			$this -> emailCtrl = new mailCtrl();
 		}
 
 		function validate_user (){
 			#Validate if userid is correct
 			$table = 'users_';
 			$table1 = '';
-			$userid = $_GET['userid'];
+			$userid = $_POST['userid'];
 			$value = $this -> validation -> validate_userid($userid);
 			if (!($value == false)) {
 				if ($value == 1) {
@@ -32,7 +36,7 @@
 					$type = 3;
 				}
 				$table = $table.$table1;
-				if ($usuario = $this -> mdl_obj -> get_user($userid,$_GET['password'],$table,$type)) {
+				if ($usuario = $this -> mdl_obj -> get_user($userid,$_POST['password'],$table,$type)) {
 					#Userid is correct
 					return $usuario;
 				}
@@ -64,36 +68,89 @@
 		function run() {
 			if (isset($_GET['act'])) {
 				switch ($_GET['act']) {
+					case 'changepwd':
+						$session = $this -> validation -> active_session();
+						if (sizeof($_POST) == 0 ){
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/change_password.html');
+							$content = str_replace("{{'mensaje'}}", 'Ingrese Contrasenha', $content);
+							$content = $this-> templateCtrl -> get_menu($content);
+							echo $header . $content . $footer;
+						}
+						if (isset($_POST['password']) && isset($_POST['password1'])) {
+							if ($session == false) {
+								$header = file_get_contents('Views/Head.html');
+								$footer = file_get_contents('Views/Footer.html');
+								$content = file_get_contents('Views/login.html');
+								$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+								echo $header.$content.$footer;
+								return;
+							}
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/logincorrectly.html');
+							$this -> mdl_obj -> updatePassword($_POST['password'],$_SESSION['userid'],$session);
+							$content = str_replace("{{'sesion-expirada'}}", 'Contrasenha modificada !', $content);
+							$content = $this-> templateCtrl -> get_menu($content);
+							echo $header . $content . $footer;
+						}
+					break;
+
 					case 'signin':
 					session_start();
-						if (isset($_GET['userid']) && isset($_GET['password'])) {
+						if (isset($_POST['userid']) && isset($_POST['password'])) {
 							if ($this -> session_started()) {
 								$this -> errors -> session_active();
 							}
 							else {
 								if ($usuario = $this -> validate_user()) {
 									$this -> start_session($usuario['usuario'],$usuario['type'],$usuario['userid']);
-									require('Views/loginCorrectly.php');
+									$header = file_get_contents('Views/Head.html');
+									$footer = file_get_contents('Views/Footer.html');
+									if ($this -> mdl_obj -> get_generica($usuario['userid'])) {
+										$_SESSION['pass'] = $_POST['password'];
+										$content = file_get_contents('Views/change_password.html');
+										$content = str_replace("{{'mensaje'}}", 'Por razones de seguridad, Cambie su contrasenha', $content);
+									}
+									else
+										$content = file_get_contents('Views/logincorrectly.html');
+									//require('Views/loginCorrectly.php');
+									$content = $this-> templateCtrl -> get_menu($content);
+									echo $header . $content . $footer;
 								}
 								else {
-									$this -> errors -> error_login_data();
+									//$this -> errors -> error_login_data();
+									$header = file_get_contents('Views/Head.html');
+									$content = file_get_contents('Views/login.html');
+									$footer = file_get_contents('Views/Footer.html');
+									$content = $this-> templateCtrl -> procesarPlantilla_login($content,2);
+									echo $header.$content.$footer;
 								}
 							}
 						}
 						else {
-							$this -> errors -> not_found_input('User ID or Password');
+							$header = file_get_contents('Views/Head.html');
+							$content = file_get_contents('Views/login.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = $this-> templateCtrl -> procesarPlantilla_login($content,2);
+							echo $header.$content.$footer;
 						}
 						break;
 
 					case 'signout':
 						session_start();
 						$this -> end_session();
-						echo 'Signed out';
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/login.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = $this-> templateCtrl -> procesarPlantilla_login($content,1);
+						echo $header.$content.$footer;
                         break;
 					
 					default:
 						#Activity  was not valid
-						echo 'Activity ',$_GET['actl'],' is not valid';
+						echo 'Activity ',$_GET['act'],' is not valid';
 						break;
 				}
 			}

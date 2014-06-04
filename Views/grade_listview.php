@@ -1,6 +1,6 @@
 <?php 
 
-#Show Attendance list of the course
+#Show Grades list of the course
 	echo '&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp';
 	foreach ($grade_array as $key => $value) {
 		while ((list( , $actividad) = each($grade_array[$key]['actividad'])) &&

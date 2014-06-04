@@ -5,6 +5,8 @@ class cicleMdl {
 	
 	function __construct($driver) {
 		$this -> db_driver = $driver;
+		require('Models/stdMdl.php');
+		$this -> std_obj = new stdMdl($driver);
 	}
 
 	function add_cicle($cicle_array,$nonworking) {

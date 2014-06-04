@@ -1,0 +1,31 @@
+<body onload="cursos_alumno()">
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+	<div class="container"> <h2>Selecciona el Curso</h2></div>
+  <div class="container table-responsive" id="contenedor_peq">
+      <table class="table">
+        <tr>
+          <td>
+            <label for="ciclo">Ciclo</label>
+            <select onchange="cursos_alumno()" onblur="cursos_alumno()" id="ciclo" name="ciclo" type="text" class="form-control"/>
+              {{'select_ciclo'}}
+            </select>
+          </td>
+        </tr>
+      </table>
+  </div>
+  <div class="container" id="contenedor_med">
+      <table class="table" id="materias">
+
+      </table>
+  </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+  </body>

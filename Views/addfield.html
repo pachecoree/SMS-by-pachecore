@@ -1,0 +1,79 @@
+<body>
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+    <form onsubmit="return add_fields();" id="form" method="post" action="index.php?ctrl=course&act=addfield" class="form-horizontal" role="form">
+      <input type="hidden" value="{{'nrc'}}" name="nrc"/>
+      <input type="hidden" value="{{'cicle'}}" name="ciclo"/>
+  <div class="container" id="contenedor_peq1">
+    <h2>Rubros del Curso</h2>
+       <div id="h2rubros"></div>    
+       <table class="table table-responsive table-striped">
+          <thead>
+            <tr>
+              <th>
+                Actividad
+              </th>
+              <th>
+                Porcentaje
+              </th>
+              <th>
+                Columnas
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="rubros" name="rubros">
+              <td>
+                <input type="text" class="form-control" name="field[]" required></input>
+              </td>
+              <td>
+                  <input type="number" class="form-control" min="1" max="100" value="1" name="percentage[]" required/>
+              </td>
+              <td>
+                <input type="number" class="form-control" max="20" min="0" value="0" name="nocol[]" required>
+              </td>
+                <td>
+                  <button onClick="rubros_a()" type="button" class="btn btn-default btn-sm">
+                  <span class="glyphicon glyphicon-plus"></span>
+                  </button><button onClick="rubros_r(this)" type="button" class="btn btn-default btn-sm">
+                  <span class="glyphicon glyphicon-minus"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+       </table>
+      <table class="table">
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><button class="btn btn-primary btn-block" type="submit">Guardar</button></td>
+          <td><button onclick="regresar_viewcicle()" class="btn btn-primary btn-block" type="button">Regresar</button></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+      <table class="table">
+        <tr>
+          <th>
+            Recuerda que el porcetaje total debe ser 100 para poder guardar los rubros
+          </th>
+        </tr>
+      </table>
+    </div>
+    </form>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+  </body>

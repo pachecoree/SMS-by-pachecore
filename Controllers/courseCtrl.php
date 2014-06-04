@@ -12,19 +12,141 @@ class courseCtrl {
 		#Create Model object
 		require('Models/courseMdl.php');
 		$this -> mdl_obj = new courseMdl($driver);
+		require('Controllers/templatesCtrl.php');
+		$this -> templateCtrl = new templatesCtrl();
+		require('Controllers/mailCtrl.php');
+		$this -> emailCtrl = new mailCtrl();
 	}
+
 
 	function run() {
 			#Check if the activity was input
 			if (isset($_GET['act'])) {
 				switch ($_GET['act']) {
+					case 'viewcourse':
+						$session = $this -> validation -> active_session();
+						if ($session >= 2) {
+							if (isset($_POST['nrc']) && isset($_POST['ciclo'])) {
+								if (($_POST['nrc'] != "") && ($_POST['ciclo'] != "")) {
+									$clave_curso = $_POST['nrc'].$_POST['ciclo'];
+									if (is_array($info_curso = $this -> mdl_obj -> std_obj -> crear_curso_datos($clave_curso))) {
+										$ciclo_actual = $this -> mdl_obj -> std_obj -> get_cicle();
+										$band_enrolled = false;
+										if ($ciclo_actual == $_POST['ciclo']) {
+											$band_ciclo = true;
+											if ($this -> mdl_obj -> std_obj -> check_if_course_empty($clave_curso)) {
+												$band_enrolled = true;
+											}
+										}
+										else $band_ciclo = false;
+										$header = file_get_contents('Views/Head.html');
+										$footer = file_get_contents('Views/Footer.html');
+										$content = file_get_contents('Views/courseview.html');
+										$rubros = $this -> mdl_obj -> std_obj -> get_rubros($clave_curso);
+										$content = $this -> templateCtrl -> get_menu($content);
+										$content = $this -> templateCtrl -> procesarPlantilla_courseview($content,$info_curso,$rubros,$band_ciclo,$band_enrolled);
+										echo $header.$content.$footer;
+									}
+									else {
+										echo 'not found';
+									}
+								}
+								else 
+									echo 'nrc or ciclo are incorrect';
+							}
+							else {
+								echo 'nrc or ciclo no were not found';
+							}
+						}
+						else if ($session == false) {
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/login.html');
+							$content = $this -> templateCtrl -> procesarPlantilla_login($content,0);
+							echo $header.$content.$footer;
+						}
+						else {
+							$this -> errors -> not_valid_usertype();
+						}
+					break;
+					case 'search':
+						$session = $this -> validation -> active_session();
+						if ($session >= 2) {
+							if (isset($_POST['ciclo']) && isset($_POST['teacher_id'])) {
+								$nrc = $this -> mdl_obj -> std_obj -> get_nrcs($_POST['ciclo'],$_POST['teacher_id']);
+
+								echo $this -> templateCtrl -> llena_select_nrc($nrc);
+							}
+							else {
+								if ($session == 3) {
+									$teachers = $this -> mdl_obj -> std_obj -> get_all_teachers();
+								}
+								else {
+									$teachers['clave'][] = $_SESSION['userid'];
+									$teachers['nombre'][] = $_SESSION['user'];
+								}
+								$header = file_get_contents('Views/Head.html');
+								$footer = file_get_contents('Views/Footer.html');
+								$content = file_get_contents('Views/searchcourse.html');
+								$content = $this -> templateCtrl -> get_menu($content);
+								$cicles = $this -> mdl_obj -> std_obj -> get_all_cicles();
+								$content = str_replace("{{'select_maestros'}}", $this -> templateCtrl -> llena_select_maestros($teachers), $content);
+								$content = $this -> templateCtrl -> procesarPlantilla_searchcourse($content,$cicles);
+								echo $header.$content.$footer;
+							}
+						}
+						else if ($session == false) {
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/login.html');
+							$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+							echo $header.$content.$footer;
+						}
+						else {
+							$this -> errors -> not_valid_usertype();
+						}
+						break;
+					case 'new':
+						$session = $this -> validation -> active_session();
+						if ($session >= 2) {
+							if ($session == 3) {
+								$teachers = $this -> mdl_obj -> std_obj -> get_all_teachers();
+							}
+							else {
+								$teachers['clave'][] = $_SESSION['userid'];
+								$teachers['nombre'][] = $_SESSION['user'];
+							}
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/addcourse.html');
+							$content = $this -> templateCtrl -> get_menu($content);
+							$materias = $this -> mdl_obj -> std_obj -> get_all_materias();
+							$dias = $this -> mdl_obj -> std_obj -> get_all_dias();
+							$horas = $this -> mdl_obj -> std_obj -> get_all_horas();
+							$content = str_replace("{{'select_maestros'}}", $this -> templateCtrl -> llena_select_maestros($teachers), $content);
+							$content = str_replace("{{'select_materia'}}", $this -> templateCtrl -> llena_select_materias($materias),$content);
+							$content = str_replace("{{'select_dia'}}", $this -> templateCtrl -> llena_select_dias($dias),$content);
+							$content = str_replace("{{'select_hora'}}", $this -> templateCtrl -> llena_select_horas($horas),$content);
+							echo $header.$content.$footer;
+						}
+						else if ($session == false) {
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/login.html');
+							$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+							echo $header.$content.$footer;
+						}
+						else {
+							$this -> errors -> not_valid_usertype();
+						}
+						break;
 					case 'create':
 					$session = $this -> validation -> active_session();
 					if ($session >= 2) {
 						if ($session == 3) {
-							if (isset($_GET['teacher_id'])) {
-								if ($this -> validation -> validate_userid($_GET['teacher_id']) == 2) {
-									$teacher_id = $_GET['teacher_id'];	
+							if (isset($_POST['teacher_id'])) {
+								if ($this -> validation -> validate_userid($_POST['teacher_id']) == 2) {
+									$teacher_id = $_POST['teacher_id'];	
 								}
 								else {
 									$this -> errors -> not_valid_userid('Teacher');
@@ -38,51 +160,59 @@ class courseCtrl {
 						}
 						else
 							$teacher_id = $_SESSION['userid'];
-						if (isset($_GET['subject'])) {
+						if (isset($_POST['subject'])) {
 							#Validate if the subject name is valid
-							if ($this -> validation -> validate_subject($_GET['subject'])) {
+							if ($this -> validation -> validate_subject($_POST['subject'])) {
 								#Check if the NRC exists
-								if (isset($_GET['nrc'])) {
+								if (isset($_POST['nrc'])) {
 									#Validate if the nrc is valid
-									if ($this -> validation -> validate_nrc($_GET['nrc'])) {
+									if ($this -> validation -> validate_nrc($_POST['nrc'])) {
 										#Check if section exists
-										if (isset($_GET['section'])) {
+										if (isset($_POST['section'])) {
 											#Validate if the section is correct
-											if ($this -> validation -> validate_section($_GET['section'])) {
+											if ($this -> validation -> validate_section($_POST['section'])) {
 												#Check if the course schedule is correct
 												#Check if course days and hours exists
-												if (isset($_GET['days']) && isset($_GET['hours']) && isset($_GET['schedule'])) {
-													if ((is_array($_GET['days']) && is_array($_GET['hours']) && is_array($_GET['schedule'])) && ($this -> validation -> validate_schedule($_GET['days'],$_GET['hours'],$_GET['schedule']))) {
+												if (isset($_POST['days']) && isset($_POST['hours']) && isset($_POST['schedule'])) {
+													if ((is_array($_POST['days']) && is_array($_POST['hours']) && is_array($_POST['schedule'])) && ($this -> validation -> validate_schedule($_POST['days'],$_POST['hours'],$_POST['schedule']))) {
 														#Create the course array and set the values
-														$course_array = array( "subject" => strtoupper($_GET['subject']),
+														$course_array = array( "subject" => strtoupper($_POST['subject']),
 																		 	   "teacher_id" => strtoupper($teacher_id), 
-																		 	   "section" => strtoupper($_GET['section']),
-																			   "nrc" => $_GET['nrc']);
+																		 	   "section" => strtoupper($_POST['section']),
+																			   "nrc" => $_POST['nrc']);
 														#Separate days elements and add them to course array
-														foreach ($_GET['days'] as $key => $value) {
+														foreach ($_POST['days'] as $key => $value) {
 															$aux_array[] = $value;
 														}
 														$course_array['days'] = $aux_array;
 														$aux_array = array();
 														#Separate hours elements and add them to course array
-														foreach ($_GET['hours'] as $key => $value) {
+														foreach ($_POST['hours'] as $key => $value) {
 															$aux_array[] = $value;
 														}
 														$course_array['hours'] = $aux_array;
 														$aux_array = array();
 														#Separate schedule elements and add them to course array
-														foreach ($_GET['schedule'] as $key => $value) {
+														foreach ($_POST['schedule'] as $key => $value) {
 															$aux_array[] = $value;
 														}
 														$course_array['schedule'] = $aux_array;
 														#Callback to the add function, sending the array created as a parameter
 														if (is_array($course_array = $this -> mdl_obj -> add_course($course_array))) {
 															#Get the view
-															require('Views/courseview.php');
+															//require('Views/courseview.php');
+															$header = file_get_contents('Views/Head.html');
+															$footer = file_get_contents('Views/Footer.html');
+															$content = file_get_contents('Views/courseview.html');
+															$rubros = $this -> mdl_obj -> std_obj -> get_rubros($course_array['ciclo']);
+															$content = $this -> templateCtrl -> get_menu($content);
+															$content = $this -> templateCtrl -> procesarPlantilla_courseview($content,$course_array,$rubros,true,true);
+
+															echo $header.$content.$footer;
 														}
 														else {
 															#Error adding course
-															$this -> errors -> error_add_course($_GET['subject']);
+															$this -> errors -> error_add_course($_POST['subject']);
 														}
 													}
 													else {
@@ -97,7 +227,7 @@ class courseCtrl {
 											}
 											else {
 												#Section is not valid
-												$this -> errors -> not_valid_format($_GET['section'],'Section');
+												$this -> errors -> not_valid_format($_POST['section'],'Section');
 											}
 										}
 										else {
@@ -107,7 +237,7 @@ class courseCtrl {
 									}
 									else {
 										#NRC is not valid
-										$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+										$this -> errors -> not_valid_format($_POST['nrc'],'NRC');
 									}
 								}
 								else {
@@ -117,7 +247,7 @@ class courseCtrl {
 							}
 							else {
 								#Subject name is not valid
-								$this -> errors -> not_valid_format($_GET['subject'],'Subject Name');
+								$this -> errors -> not_valid_format($_POST['subject'],'Subject Name');
 							}
 						}
 						else {
@@ -126,129 +256,227 @@ class courseCtrl {
 						}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
 					}
 					break;
-				
 				case 'clone':
 					$session = $this -> validation -> active_session();
-					if ($session >= 2) {
-						if ($session == 3) {
-							if (isset($_GET['teacher_id'])) {
-								if ($this -> validation -> validate_userid($_GET['teacher_id']) == 2) {
-									$teacher_id = $_GET['teacher_id'];	
+					if (sizeof($_POST) == 0) {
+						if ($session >= 2) {
+							if ($session == 3) {
+								$teachers = $this -> mdl_obj -> std_obj -> get_all_teachers();
+							}
+							else {
+								$teachers['clave'][] = $_SESSION['userid'];
+								$teachers['nombre'][] = $_SESSION['user'];
+							}
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/clonecourse.html');
+
+							$cicles = $this -> mdl_obj -> std_obj -> get_all_cicles();
+							$materias = $this -> mdl_obj -> std_obj -> get_all_materias();
+
+							$content = $this -> templateCtrl -> get_menu($content);
+							$content = str_replace("{{'select_maestros'}}", $this -> templateCtrl -> llena_select_maestros($teachers), $content);
+							$content = str_replace("{{'select_materia'}}", $this -> templateCtrl -> llena_select_materias($materias),$content);
+							$content = $this -> templateCtrl -> procesarPlantilla_clonecourse($content,$cicles);
+
+							echo $header.$content.$footer;
+						}
+						else if ($session == false) {
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/login.html');
+							$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+							echo $header.$content.$footer;
+						}
+					}
+					else {
+						if ($session >= 2) {
+							if ($session == 3) {
+								if (isset($_POST['teacher_id'])) {
+									if ($this -> validation -> validate_userid($_POST['teacher_id']) == 2) {
+										$teacher_id = $_POST['teacher_id'];	
+									}
+									else {
+										$this -> errors -> not_valid_userid('Teacher');
+										die();
+									}
 								}
 								else {
-									$this -> errors -> not_valid_userid('Teacher');
+									$this -> errors -> not_found_input('Teacher ID');
 									die();
 								}
 							}
-							else {
-								$this -> errors -> not_found_input('Teacher ID');
-								die();
-							}
-						}
-						else
-							$teacher_id = $_SESSION['userid'];
-						#Check if cicle_c exists
-						if (isset($_GET['cicle_c'])) {
-							#Validate if cicle_c is correct
-							if ($this -> validation -> validate_cicle($_GET['cicle_c'])) {
-								#Check if the NRC exists
-									if (isset($_GET['nrc'])) {
-										#Validate if the nrc is valid
-										if ($this -> validation -> validate_nrc($_GET['nrc'])) {
-											#Check if section exists
-											if (isset($_GET['section'])) {
-												#Validate if the section is correct
-												if ($this -> validation -> validate_section($_GET['section'])) {
-													#Check if nrc_c exists
-													if (isset($_GET['nrc_c'])) {
-														#Validate if nrc_c is correct
-														if ($this -> validation -> validate_nrc($_GET['nrc_c'])) {
-															#Check if subject exists
-															if (isset($_GET['subject'])) {
-																#Validate subject
-																if ($this -> validation -> validate_subject($_GET['subject'])) {
-																	#Create the course array and set the values
-																	$course_array = array( "ciclo_anterior" =>strtoupper($_GET['cicle_c']),
-																				 	       "seccion" => strtoupper($_GET['section']),
-																				 	       "clave_materia" => strtoupper($_GET['subject']),
-																						   "nrc_anterior" => $_GET['nrc_c'],
-																						   "clave_maestro" => strtoupper($teacher_id),
-																						   "nrc" => $_GET['nrc']);
+							else
+								$teacher_id = $_SESSION['userid'];
+							#Check if cicle_c exists
+							if (isset($_POST['cicle_c'])) {
+								#Validate if cicle_c is correct
+								if ($this -> validation -> validate_cicle($_POST['cicle_c'])) {
+									#Check if the NRC exists
+										if (isset($_POST['nrc'])) {
+											#Validate if the nrc is valid
+											if ($this -> validation -> validate_nrc($_POST['nrc'])) {
+												#Check if section exists
+												if (isset($_POST['section'])) {
+													#Validate if the section is correct
+													if ($this -> validation -> validate_section($_POST['section'])) {
+														#Check if nrc_c exists
+														if (isset($_POST['nrc_c'])) {
+															#Validate if nrc_c is correct
+															if ($this -> validation -> validate_nrc($_POST['nrc_c'])) {
+																#Check if subject exists
+																if (isset($_POST['subject'])) {
+																	#Validate subject
+																	if ($this -> validation -> validate_subject($_POST['subject'])) {
+																		#Create the course array and set the values
+																		$course_array = array( "ciclo_anterior" =>strtoupper($_POST['cicle_c']),
+																					 	       "seccion" => strtoupper($_POST['section']),
+																					 	       "clave_materia" => strtoupper($_POST['subject']),
+																							   "nrc_anterior" => $_POST['nrc_c'],
+																							   "clave_maestro" => strtoupper($teacher_id),
+																							   "nrc" => $_POST['nrc']);
 
-																	#Callback to the add function, sending the array created as a parameter
-																	$course_array = $this -> mdl_obj -> clone_course($course_array);
-																	if (is_array($course_array)) {
-																		#Get the view
-																		require('Views/courseview.php');
+																		#Callback to the add function, sending the array created as a parameter
+																		$course_array = $this -> mdl_obj -> clone_course($course_array);
+																		if (is_array($course_array)) {
+																			#Get the view
+																			//require('Views/courseview.php');
+																			$header = file_get_contents('Views/Head.html');
+																			$footer = file_get_contents('Views/Footer.html');
+																			$content = file_get_contents('Views/courseview.html');
+																			$rubros = $this -> mdl_obj -> std_obj -> get_rubros($course_array['ciclo']);
+																			$content = $this -> templateCtrl -> get_menu($content);
+																			$content = $this -> templateCtrl -> procesarPlantilla_courseview($content,$course_array,$rubros,true,true);
+
+																			echo $header.$content.$footer;
+																		}
+																		else {
+																			#Error adding course
+																			$this -> errors -> error_add_course($_POST['subject']);
+																		}
 																	}
 																	else {
-																		#Error adding course
-																		$this -> errors -> error_add_course($_GET['subject']);
+																		#Subject is not valid
+																		$this -> errors -> not_valid_format($_POST['subject'],'Subject ID');
 																	}
 																}
 																else {
-																	#Subject is not valid
-																	$this -> errors -> not_valid_format($_GET['subject'],'Subject ID');
+																	#Subject was not input
+																	$this -> errors -> not_found_input('Subject ID');
 																}
 															}
 															else {
-																#Subject was not input
-																$this -> errors -> not_found_input('Subject ID');
+																#NRC_c is not valid
+																$this -> errors -> not_valid_format($_POST['nrc_c'],'NRC_c');
 															}
 														}
 														else {
-															#NRC_c is not valid
-															$this -> errors -> not_valid_format($_GET['nrc_c'],'NRC_c');
+															#NRC_c was not input
+															$this -> errors -> not_found_input('NRC_c');
 														}
+														
 													}
 													else {
-														#NRC_c was not input
-														$this -> errors -> not_found_input('NRC_c');
+														#Section is not valid
+														$this -> errors -> not_valid_format($_POST['section'],'Section');
 													}
-													
 												}
 												else {
-													#Section is not valid
-													$this -> errors -> not_valid_format($_GET['section'],'Section');
+													#Section was not input
+													$this -> errors -> not_found_input('Section');
 												}
 											}
 											else {
-												#Section was not input
-												$this -> errors -> not_found_input('Section');
+												#NRC is not valid
+												$this -> errors -> not_valid_format($_POST['nrc'],'NRC');
 											}
 										}
 										else {
-											#NRC is not valid
-											$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+											#NRC was not input
+											$this -> errors -> not_found_input('NRC');
 										}
 									}
 									else {
-										#NRC was not input
-										$this -> errors -> not_found_input('NRC');
+										#Cicle_cc format is incorrect
+										$this -> errors -> not_valid_format($_POST['cicle_c'],'Cicle');
 									}
 								}
 								else {
-									#Cicle_cc format is incorrect
-									$this -> errors -> not_valid_format($_GET['cicle_c'],'Cicle');
+									#Cicle_c was not input
+									$this -> errors -> not_found_input('Cicle');
+								}
+							}
+							else if ($session == false) {
+								$header = file_get_contents('Views/Head.html');
+								$footer = file_get_contents('Views/Footer.html');
+								$content = file_get_contents('Views/login.html');
+								$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+								echo $header.$content.$footer;
+							}
+							else {
+								$this -> errors -> not_valid_usertype();
+							}
+						}
+					break;
+
+
+				case 'list':
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						#User is allowed to execute action
+						#Check if course exists
+						if (isset($_POST['nrc']) && isset($_POST['ciclo'])) {
+							if ($this -> validation -> validate_courseid($_POST['nrc'])) {
+								#Callback to the view function
+								$students_array = $this -> mdl_obj -> view_course_students($_POST['nrc'],$_POST['ciclo']);
+								if (is_array($students_array)) {
+									#Get the View
+									$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
+									$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
+									$header = file_get_contents('Views/Head.html');
+									$content = file_get_contents('Views/course_listview.html');
+									$footer = file_get_contents('Views/Footer.html');
+									$content = $this -> templateCtrl -> procesarPlantilla_course_listview($content,$students_array,$subject_array);
+									$content = $this -> templateCtrl -> get_menu($content);
+									echo $header . $content . $footer;
+								}
+								else {
+									#The course was not found
+									$this -> errors -> not_valid_input($_POST['nrc']);
 								}
 							}
 							else {
-								#Cicle_c was not input
-								$this -> errors -> not_found_input('Cicle');
+								#Course ID is not valid
+								$this -> errors -> not_valid_format($_POST['nrc'],'NRC');
 							}
 						}
-						else if ($session == false) {
-							$this -> errors -> not_logged_in();
-						}
 						else {
-							$this -> errors -> not_valid_usertype();
+							#Course ID was not input
+							$this -> errors -> not_found_input('NRC');
 						}
+					}
+					else if ($session == false) {
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/login.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = $this-> templateCtrl -> procesarPlantilla_login($content,0);
+						echo $header.$content.$footer;
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
 					break;
 
 				case 'list_a':
@@ -257,32 +485,46 @@ class courseCtrl {
 					#Check account privileges
 					if ($session >= 2) {
 						#User is allowed to execute action
-					#Check if course exists
-					if (isset($_GET['nrc'])) {
-						if ($this -> validation -> validate_courseid($_GET['nrc'])) {
-							#Callback to the view function
-							$attendance_array = $this -> mdl_obj -> view_course_attendance($_GET['nrc']);
-							if (is_array($attendance_array)) {
-								#Get the View
-								require('Views/attendance_listview.php');
+						#Check if course exists
+						if (isset($_POST['nrc']) && isset($_POST['ciclo'])) {
+							if ($this -> validation -> validate_courseid($_POST['nrc'])) {
+								#Callback to the view function
+								$attendance_array = $this -> mdl_obj -> view_course_attendance($_POST['nrc'],$_POST['ciclo']);
+								if (is_array($attendance_array)) {
+									#Get the View
+									$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
+									$band_ciclo = false;
+									if ($ciclo == $_POST['ciclo']) $band_ciclo = true;
+									$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
+									$hoy = $this -> mdl_obj -> std_obj -> obtener_dia();
+									$header = file_get_contents('Views/Head.html');
+									$content = file_get_contents('Views/attendance_listview.html');
+									$footer = file_get_contents('Views/Footer.html');
+									$content = $this -> templateCtrl -> procesarPlantilla_attendance_listview($content,$attendance_array,$subject_array,$hoy,$_POST['nrc'].$_POST['ciclo'],$band_ciclo,$_POST['ciclo']);
+									$content = $this -> templateCtrl -> get_menu($content);
+									echo $header . $content . $footer;
+								}
+								else {
+									#The course was not found
+									$this -> errors -> error_query_list($_POST['nrc']);
+								}
 							}
 							else {
-								#The course was not found
-								$this -> errors -> error_query_list($_GET['nrc']);
+								#Course ID is not valid
+								$this -> errors -> not_valid_format($_POST['nrc'],'NRC');
 							}
 						}
 						else {
-							#Course ID is not valid
-							$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+							#Course ID was not input
+							$this -> errors -> not_found_input('NRC');
 						}
 					}
-					else {
-						#Course ID was not input
-						$this -> errors -> not_found_input('NRC');
-					}
-					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/login.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = $this-> templateCtrl -> procesarPlantilla_login($content,0);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
@@ -296,14 +538,24 @@ class courseCtrl {
 					if ($session >= 2) {
 						#User is allowed to execute action
 					#Check if NRC exists
-					if (isset($_GET['nrc'])) {
+					if (isset($_POST['nrc']) && isset($_POST['ciclo'])) {
 						#validate NRC
-						if ($this -> validation -> validate_nrc($_GET['nrc'])) {
+						if ($this -> validation -> validate_nrc($_POST['nrc'])) {
 							#Callback to the view function
-							$grade_array = $this -> mdl_obj -> view_course_grade($_GET['nrc']);
+							$grade_array = $this -> mdl_obj -> view_course_grade($_POST['nrc'],$_POST['ciclo']);
 							if (is_array($grade_array)) {
 								#Get the View
-								require('Views/grade_listview.php');
+								//require('Views/grade_listview.php');
+								$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
+								$band_ciclo = false;
+								if ($ciclo == $_POST['ciclo']) $band_ciclo = true;
+								$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$ciclo);
+								$header = file_get_contents('Views/Head.html');
+								$content = file_get_contents('Views/grade_listview.html');
+								$footer = file_get_contents('Views/Footer.html');
+								$content = $this -> templateCtrl -> procesarPlantilla_grade_listview($content,$grade_array,$subject_array,$band_ciclo,$_POST['ciclo']);
+								$content = $this -> templateCtrl -> get_menu($content);
+								echo $header . $content . $footer;
 							}
 							else {
 								#The course was not found
@@ -312,7 +564,7 @@ class courseCtrl {
 						}
 						else {
 							#NRC is not valid
-							$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+							$this -> errors -> not_valid_format($_POST['nrc'],'NRC');
 						}
 					}
 					else {
@@ -321,7 +573,12 @@ class courseCtrl {
 					}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						//$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/login.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = $this-> templateCtrl -> procesarPlantilla_login($content,0);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
@@ -331,53 +588,65 @@ class courseCtrl {
 				case 'addstudent':
 					$session = $this -> validation -> active_session();
 					if ($session >= 2) {
-						if ($session == 3) {
-							if (isset($_GET['teacher_id'])) {
-								if ($this -> validation -> validate_userid($_GET['teacher_id']) == 2) {
-									$teacher_id = $_GET['teacher_id'];	
-								}
-								else {
-									$this -> errors -> not_valid_userid('Teacher');
-									die();
-								}
-							}
-							else {
-								$this -> errors -> not_found_input('Teacher ID');
-								die();
-							}
+						if (isset($_POST['agrega_curso']) && !isset($_POST['nrc']) && isset($_POST['studentid'])) {
+							$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
+							$nrc = $this -> mdl_obj -> std_obj -> get_nrcs_cicle($ciclo,$_POST['studentid']);
+							$cadena = '
+								<tr>
+					              <td><label for="txtnrc">Escribe NRC</label></td>
+					            </tr><tr>
+					            <td>
+					              <input onkeyup="nrc_input(this)" onblur="nrc_input(this)" type="text" class="form-control" id="txtnrc"  maxlength="5">
+					              </input>
+					            </td>
+								<td>
+								<select onchange="nrc_select(this); mostrar_nrc_info(this);" id="selnrc" name="nrc" type="text" class="form-control">'
+								.$this -> templateCtrl -> llena_select_nrc($nrc).
+								'</select>
+								</td>
+								</tr>
+							';
+							echo $cadena;
+							return;
 						}
-						else
-							$teacher_id = $_SESSION['userid'];
+						if (isset($_POST['agrega_curso']) && isset($_POST['nrc'])) {
+							$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
+							$curso = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$ciclo);
+							echo $this -> templateCtrl -> procesarPlantilla_courseview(file_get_contents('Views/add_tocoursebody.html'),$curso,false,false,false);
+							return;
+							//return $this -> templateCtrl -> mostrar_curso($curso);
+						}
 						#Check if NRC exists
-							if (isset($_GET['nrc'])) {
+							if (isset($_POST['nrc'])) {
 								#Validate NRC
-								if ($this -> validation -> validate_nrc($_GET['nrc'])) {
+								if ($this -> validation -> validate_nrc($_POST['nrc'])) {
 									#Check if Student ID exists
-									if (isset($_GET['studentid'])) {
+									if (isset($_POST['studentid'])) {
 										#Validate Student ID
-										if ($this -> validation -> validate_sid($_GET['studentid'])) {
+										if ($this -> validation -> validate_sid($_POST['studentid'])) {
 											#Send code to model
-											$student =$this -> mdl_obj -> add_student_to_course($_GET['studentid'],$_GET['nrc'],$teacher_id);
+											$student =$this -> mdl_obj -> add_student_to_course($_POST['studentid'],$_POST['nrc']);
 											if (is_array($student)) {
 												#Get the view
-												require('Views/student_added_course.php');
+												//require('Views/student_added_course.php');
+												echo 'Alumno agregado al curso con exito';
 											}
 											else if ($student == 1) {
 												#Failed to add student to course
-												$this -> errors -> error_add_student_course($_GET['studentid']);
+												$this -> errors -> error_add_student_course($_POST['studentid']);
 											}
 											else if ($student == 2) {
 												#Student is already in course
-												$this -> errors -> student_in_course($_GET['studentid']);
+												$this -> errors -> student_in_course($_POST['studentid']);
 											}
 											else {
 												#Could not find student
-												$this -> errors -> student_not_found($_GET['studentid']);
+												$this -> errors -> student_not_found($_POST['studentid']);
 											}
 										}
 										else {
 											#Student ID not valid
-											$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+											$this -> errors -> not_valid_format($_POST['studentid'],'Student ID');
 										}
 									}
 									else {
@@ -387,7 +656,7 @@ class courseCtrl {
 								}
 								else {
 									#NRC is not valid
-									$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+									$this -> errors -> not_valid_format($_POST['nrc'],'NRC');
 								}
 							}
 							else {
@@ -396,92 +665,110 @@ class courseCtrl {
 							}
 						}
 						else if ($session == false) {
-							$this -> errors -> not_logged_in();
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/login.html');
+							$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+							echo $header.$content.$footer;
 						}
 						else {
 							$this -> errors -> not_valid_usertype();
 						}
 					break;
+				case 'viewfields' :
+					#Check if session is active
+					$session = $this -> validation -> active_session();
+					#Check account privileges
+					if ($session >= 2) {
+						if (isset($_POST['clave_curso'])) {
+							$rubros = $this -> mdl_obj -> std_obj -> get_rubros($_POST['clave_curso']);
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/viewfields.html');
+							$content = $this -> templateCtrl -> get_menu($content);
+							$content = $this -> templateCtrl -> procesarPlantilla_viewfields($content,$rubros);
+							echo $header.$content.$footer;
+						}
+					}
+					else if ($session == false) {
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
+				break;
 
 				case 'addfield':
 					#Check if session is active
 					$session = $this -> validation -> active_session();
 					#Check account privileges
 					if ($session >= 2) {
-						if ($session == 3) {
-							if (isset($_GET['teacher_id'])) {
-								if ($this -> validation -> validate_userid($_GET['teacher_id']) == 2) {
-									$teacher_id = $_GET['teacher_id'];	
-								}
-								else {
-									$this -> errors -> not_valid_userid('Teacher');
-									die();
-								}
-							}
-							else {
-								$this -> errors -> not_found_input('Teacher ID');
-								die();
-							}
+						if (isset($_POST['nrc_curso'])) {
+							$header = file_get_contents('Views/Head.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = file_get_contents('Views/addfield.html');
+							$content = str_replace("{{'nrc'}}", $_POST['nrc_curso'], $content);
+							$content = str_replace("{{'cicle'}}", $this -> mdl_obj -> std_obj -> get_cicle(),$content);
+							$content = $this -> templateCtrl -> get_menu($content);
+							echo $header.$content.$footer;
+							return;
 						}
-						else
-							$teacher_id = $_SESSION['userid'];
-						#User is allowed to execute action
-						#Check if NRC exists
-						if (isset($_GET['nrc'])) {
-							#Check if NRC is valid
-							if ($this -> validation -> validate_nrc($_GET['nrc'])) {
+						else if (sizeof($_POST) > 0) {
+							#User is allowed to execute action
+							#Check if NRC exists
+							if (isset($_POST['nrc'])) {
 								#Check Field exists
-								if (isset($_GET['field'])) {
-									#Check if Field is valid
-									if ($this -> validation -> validate_field($_GET['field'])) {
-										#Check if percentage exists
-										if (isset($_GET['percentage'])) {
-											#Check if percentage is valid
-											if ($this -> validation -> validate_percentage($_GET['percentage'])) {
-												#Check if nocol exists
-												if (isset($_GET['nocol'])) {
-													#Check if nocol is valid
-													if ($this -> validation -> validate_nocol($_GET['nocol'])) {
-														#Create array to send to the add field function
-														$field_array = array ("nrc" => $_GET['nrc'],
-																			  "field" => $_GET['field'],
-																			  "percentage" => $_GET['percentage'],
-																			  "nocol" => $_GET['nocol'],
-																			  "teacher_id" => $teacher_id);
-														$field_array = $this -> mdl_obj -> add_field_to_course($field_array);
-														if (is_array($field_array)) {
-															#Field was added to Course
-															#Get the view
-															require('Views/field_added_courseview.php');
-														}
-														else {
-															#Could not add field to course
-															$this -> errors ->  error_add_field($_GET['field']);
-														}
-													}
-													else {
-														#Nocol is not valid
-														$this -> errors -> not_valid_format($_GET['nocol'],'Number of Columns');
-													}
+								if (isset($_POST['field'])) {
+									#Check if percentage exists
+									if (isset($_POST['percentage'])) {
+										#Check if nocol exists
+										if (isset($_POST['nocol'])) {
+											#Create array to send to the add field function
+											$band = 0;
+											while ((list( ,$percentage) = each($_POST['percentage'])) && (list( ,$nocol) = each($_POST['nocol'])) 
+												    && (list( ,$field) = each($_POST['field']))) {	
+												$field_array = array ("nrc" => $_POST['nrc'],
+																	"field" => $field,
+																	"percentage" => $percentage,
+																	"nocol" => $nocol);
+												$field_array = $this -> mdl_obj -> add_field_to_course($field_array);
+												if (!is_array($field_array)) {
+													$band=1;
 												}
+											}
+											$clave_curso = $_POST['nrc'].$this -> mdl_obj -> std_obj -> get_cicle();
+											if (is_array($info_curso = $this -> mdl_obj -> std_obj -> crear_curso_datos($clave_curso))) {
+												$band_enrolled = false;
+												$band_ciclo = true;
+												if ($this -> mdl_obj -> std_obj -> check_if_course_empty($clave_curso)) {
+													$band_enrolled = true;
+												}
+												$header = file_get_contents('Views/Head.html');
+												$footer = file_get_contents('Views/Footer.html');
+												$content = file_get_contents('Views/courseview.html');
+												$rubros = $this -> mdl_obj -> std_obj -> get_rubros($clave_curso);
+												$content = $this -> templateCtrl -> get_menu($content);
+												if ($band == 0) $content = str_replace("'&nbsp;'",'<div class="container"><h2>Rubros Agregados!</h2></div>', $content);
 												else {
-													#Nocol was not input
-													$this -> errors -> not_found_input('Number of Columns');
+													$content = str_replace("'&nbsp;'",'<div class="container"><h2>Error al Agregar los Rubros</h2></div>', $content);
+													$this -> mdl_obj -> delete_rubros($clave_curso);
 												}
-											}													
-											else {
-												#Percetange is not valid
-												$this -> errors -> not_valid_format($_GET['percentage'],'percentage');
+												$content = $this -> templateCtrl -> procesarPlantilla_courseview($content,$info_curso,$rubros,$band_ciclo,$band_enrolled);
+												echo $header.$content.$footer;
 											}
 										}
 										else {
-											#Percentage was not input
-											$this -> errors -> not_found_input('percentage');
+											#Nocol was not input
+											$this -> errors -> not_found_input('Number of Columns');
 										}
 									}
 									else {
-										#Field is not valid
-										$this -> errors -> not_valid_format($_GET['field'],'Field');
+										#Percentage was not input
+										$this -> errors -> not_found_input('percentage');
 									}
 								}
 								else {
@@ -490,17 +777,17 @@ class courseCtrl {
 								}
 							}
 							else {
-								#NRC  is not valid
-								$this -> errors -> not_valid_format($_GET['nrc'],'NRC');
+								#NRC was not input
+								$this -> errors -> not_found_input('NRC');
 							}
-						}
-						else {
-							#NRC was not input
-							$this -> errors -> not_found_input('NRC');
 						}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
@@ -557,7 +844,11 @@ class courseCtrl {
 	 					}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
@@ -569,96 +860,45 @@ class courseCtrl {
 					$session = $this -> validation -> active_session();
 					#Check account privileges
 					if ($session >= 2) {
-						if ($session == 3) {
-							if (isset($_GET['teacher_id'])) {
-								if ($this -> validation -> validate_userid($_GET['teacher_id']) == 2) {
-									$teacher_id = $_GET['teacher_id'];	
-								}
-								else {
-									$this -> errors -> not_valid_userid('Teacher');
-									die();
-								}
-							}
-							else {
-								$this -> errors -> not_found_input('Teacher ID');
-								die();
-							}
-						}
-						else
-							$teacher_id = $_SESSION['userid'];
 						#User is allowed to execute action
 	 					#Check if NRC exists
-	 					if (isset($_GET['nrc'])) {
-	 						#Validate NRC
-	 						if ($this -> validation -> validate_courseid($_GET['nrc'])) {
-	 							#Check if Value exists
-	 							if (isset($_GET['value'])) {
-	 								#Validate value
-	 								$value = $this -> validation -> validate_attendance($_GET['value']);
-	 								if ($value != 2) {
-	 									if (isset($_GET['day'])) {
-	 										$date = $this -> validation -> validate_date($_GET['day']);
-	 										if (!is_bool($date)) {
-			 									#Check if Student ID exists, can be more than one
-			 									if (isset($_GET['studentid'])) {
-			 										#Validated Student's ID
-			 										$studentsid_aray = array();
-			 										foreach ($_GET['studentid'] as $key => $SID) {
-			 											if ($this -> validation -> validate_sid($SID))
-			 												$studentsid_aray[] = $SID;
-			 										}
-			 										#Found Students
-			 										$studentsid_aray = $this -> mdl_obj -> check_studentsid($studentsid_aray,$_GET['nrc'],$value,date_format($date,'Y-m-d'),$teacher_id);
-			 										if (sizeof($studentsid_aray) == 0) {
-			 											#No students found from student's ID
-			 											$this -> errors -> notstudents_att();
-			 											return;
-			 										}
-			 										if ($value == 1) {
-			 											require('Views/attendance_putview.php');
-			 										}
-			 										else if ($value == 0) {
-			 											require('Views/attendance_removeview.php');
-			 										}
-			 										return;
-			 									}
-			 									else {
-			 										#Students ID where not input
-			 										$this -> errors -> not_found_input('Student(s) ID');
-			 									}
-	 										}
-	 										else {
-	 											#Date is not valid
-	 											$this -> errors -> not_valid_date();
-	 										}
-	 									}
-	 									else {
-	 										#Days was not input
-	 										$this -> errors -> not_found_input('Day');
-	 									}
-	 								}
-	 								else {
-	 									#Value is not valid
-	 									$this -> errors -> not_valid_format($_GET['value'],'Value');
-	 								}
-	 							}	
-	 							else {
-	 								#Value was not input
-	 								$this -> errors -> not_found_input('Value');
-	 							}
+	 					if (isset($_POST['courseid'])) {
+	 						#Check if Value exists
+	 						if (isset($_POST['cambiar_asistencia'])) {
+			 					foreach ($_POST['cambiar_asistencia'] as $key => $datos) {
+			 						list($studentid,$dia, $value) = explode("_", $datos);
+			 						list($month,$day,$year) = explode("/",$dia);
+									$dia = "$year-$month-$day";
+			 						$this -> mdl_obj -> check_studentsid($_POST['courseid'],$studentid,$dia,$value);
+			 					}
 	 						}
-	 						else {
-	 							#Course ID is not valid
-	 							$this -> errors ->not_valid_format($_GET['nrc'],'NRC');
-	 						}
+							$attendance_array = $this -> mdl_obj -> view_course_attendance($_POST['nrc'],$_POST['ciclo']);
+							if (is_array($attendance_array)) {
+								#Get the View
+								$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
+								$band_ciclo = false;
+								if ($ciclo == $_POST['ciclo']) $band_ciclo = true;
+								$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
+								$hoy = $this -> mdl_obj -> std_obj -> obtener_dia();
+								$header = file_get_contents('Views/Head.html');
+								$content = file_get_contents('Views/attendance_listview.html');
+								$footer = file_get_contents('Views/Footer.html');
+								$content = $this -> templateCtrl -> procesarPlantilla_attendance_listview($content,$attendance_array,$subject_array,$hoy,$_POST['nrc'].$_POST['ciclo'],$band_ciclo,$_POST['ciclo']);
+								$content = $this -> templateCtrl -> get_menu($content);
+								echo $header . $content . $footer;
+							}
 	 					}
 	 					else {
 	 						#Course ID was not input
-	 						$this -> errors -> not_found_input('NRC');
+	 						$this -> errors -> not_found_input('Clave Curso');
 	 					}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
@@ -670,60 +910,93 @@ class courseCtrl {
 					$session = $this -> validation -> active_session();
 					#Check account privileges
 					if ($session >= 2) {
+						if (isset($_POST['capture']) && isset($_POST['ciclo']) && isset($_POST['nrc']) ) {
+							$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
+							$rubros = $this -> mdl_obj -> std_obj -> get_rubros($_POST['nrc'].$_POST['ciclo']);
+							$students = $this -> mdl_obj -> view_course_students($_POST['nrc'],$_POST['ciclo']);
+							$header = file_get_contents('Views/Head.html');
+							$content = file_get_contents('Views/capture_grade.html');
+							$footer = file_get_contents('Views/Footer.html');
+							$content = $this -> templateCtrl -> procesarPlantilla_capture_grade($content,$subject_array,$_POST['ciclo'],$rubros,$students);
+							$content = $this -> templateCtrl -> get_menu($content);
+							echo $header . $content . $footer;
+							return;
+						}
+						if (isset($_POST['details']) && isset($_POST['clave_rubro']) && isset($_POST['studentid'])) {
+							$rubro = $this -> mdl_obj -> get_rubro_details($_POST['clave_rubro']);
+							if ($rubro['nocol'] == 0) {
+								$calificacion_rubro = $this -> mdl_obj -> get_calificacion_rubro($rubro['clave_rubro'],$_POST['studentid'],$_POST['nrc'].$_POST['ciclo']);
+								$cadena = '
+									<tr>
+									<th>Calificacion</th>
+									</tr>
+									<tr>
+									<td><input name="grade[]" type="text" class="form-control" value="'.$calificacion_rubro.'" required></input>
+									</td></tr>
+								';
+								echo $cadena;
+								return;
+							}
+							else {
+								$calificacion_rubros = $this -> mdl_obj -> get_calificacion_rubros($rubro['clave_rubro'],$_POST['studentid'],$_POST['nrc'].$_POST['ciclo'],$rubro['nocol']);
+								$i = 1;
+								$cadena = '<tr>';
+								while ($i <= $rubro['nocol']) {
+									$cadena .= '<th>Columna '.$i++.'</th>'; 
+								}
+								$cadena .= '</tr><tr>';
+								$i = 0;
+								while ($i < sizeof($calificacion_rubros)) {
+									$cadena .= '<td><input name="grade[]" type="text" class="form-control" value="'.$calificacion_rubros[$i++].'" required></input></td>';
+								}
+								$cadena .= '</tr>';
+								echo $cadena;
+								return;
+							}
+						}
 						#User is allowed to execute action
 	 					#Check if Student ID exists
-	 					if (isset($_GET['studentid'])) {
+	 					if (isset($_POST['studentid'])) {
 	 						#Validate Student ID
-	 						if ($this -> validation -> validate_sid($_GET['studentid'])) {
+	 						if ($this -> validation -> validate_sid($_POST['studentid'])) {
 	 							#Check if field exists
-	 							if (isset($_GET['field'])) {
-	 								#Validate Field
-	 								if ($this -> validation -> validate_field($_GET['field'])) {
-	 									#Check if grade exists
-	 									if (isset($_GET['grade'])) {
-	 										#Validate grade
-	 										if ($this -> validation -> validate_grade($_GET['grade'])) {
-	 											#Check if Course ID exists
-	 											if (isset($_GET['courseid'])) {
-	 												#Validate if Course ID is correct
-	 												if ($this -> validation -> validate_courseid($_GET['courseid'])) {
-	 													#Create array to send to the add field function
-														$field_array = array ("studentid" => $_GET['studentid'],
-																			  "field" => $_GET['field'],
-																			  "grade" => $_GET['grade']);
-														$field_array = $this -> mdl_obj -> add_grade_to_field($field_array);
-														if (is_array($field_array)) {
-															#Get the view
-															require('Views/capture_gradeview.php');
-														}
-														else {
-															#Failed to capture grade
-															$this -> errors -> error_capture_grade();
-														}
-	 												}
-	 												else {
-	 													#Course ID is not valid
-	 													$this -> errors -> not_valid_format($_GET['courseid'],'Course ID');
-	 												}
-	 											}
-	 											else {
-	 												#Course ID was not iput
-	 												$this -> errors -> not_found_input('Course ID');
-	 											}
-	 										}
-	 										else {
-	 											#Grade is not valid
-	 											$this -> errors -> not_valid_format($_GET['grade'],'Grade');
-	 										}
+	 							if (isset($_POST['field'])) {
+	 								#Check if grade exists
+	 								if (isset($_POST['grade'])) {
+	 									#Create array to send to the add field function
+	 									if (sizeof($_POST['grade']) == 1) {
+											$field_array = array ("studentid" => $_POST['studentid'],
+																"field" => $_POST['field'],
+																"grade" => $_POST['grade']);
+											$this -> mdl_obj -> save_calificacion_rubro($field_array['grade'][0],$field_array['field'],$field_array['studentid'],$_POST['nrc'].$_POST['ciclo']);
 	 									}
 	 									else {
-	 										#Grade was not input
-	 										$this -> errors -> not_found_input('Grade');
+	 										$clave_curso = $_POST['nrc'].$_POST['ciclo'];
+	 										$studentid = $_POST['studentid'];
+	 										$i = 1;
+	 										$prom = 0;
+	 										foreach ($_POST['grade'] as $key => $calif_columna) {
+	 											$this -> mdl_obj -> save_calificacion_evsheet($studentid,$clave_curso,$_POST['field'],$calif_columna,$i++);
+	 											$prom += $calif_columna;
+	 										}
+	 										$prom = $prom / sizeof($_POST['grade']);
+	 										$this -> mdl_obj -> save_promedio_evsheet($studentid,$clave_curso,$_POST['field'],$prom);
+	 										$this -> mdl_obj -> save_calificacion_rubro($prom,$_POST['field'],$studentid,$clave_curso);
 	 									}
+										$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
+										$rubros = $this -> mdl_obj -> std_obj -> get_rubros($_POST['nrc'].$_POST['ciclo']);
+										$students = $this -> mdl_obj -> view_course_students($_POST['nrc'],$_POST['ciclo']);
+										$header = file_get_contents('Views/Head.html');
+										$content = file_get_contents('Views/capture_grade.html');
+										$footer = file_get_contents('Views/Footer.html');
+										$content = $this -> templateCtrl -> procesarPlantilla_capture_grade($content,$subject_array,$_POST['ciclo'],$rubros,$students);
+										$content = $this -> templateCtrl -> get_menu($content);
+										echo $header . $content . $footer;
+										return;
 	 								}
 	 								else {
-	 									#Field is not valid
-	 									$this -> errors -> not_valid_format($_GET['field'],'Field');
+	 									#Grade was not input
+	 									$this -> errors -> not_found_input('Grade');
 	 								}
 	 							}
 	 							else {
@@ -733,7 +1006,7 @@ class courseCtrl {
 	 						}
 	 						else {
 	 							#Student ID is not valid
-	 							$this -> errors -> not_valid_format($_GET['studentid'],'Student ID');
+	 							$this -> errors -> not_valid_format($_POST['studentid'],'Student ID');
 	 						}
 	 					}
 	 					else {
@@ -742,7 +1015,11 @@ class courseCtrl {
 	 					}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();

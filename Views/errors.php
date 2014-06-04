@@ -84,7 +84,7 @@ class errors {
 	}
 
 	function date_not_valid($date) {
-		echo $date ,'is not a valid date';
+		echo $date ,' is not a valid date';
 	}
 
 	function not_logged_in() {

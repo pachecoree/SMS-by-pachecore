@@ -1,0 +1,50 @@
+  <body>
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+	<div class="container" id="contenedor_peq">
+		<h2>Datos del Ciclo</h2>
+       <table class="table">
+	       	<tr>
+	       		<th>Ciclo</th>
+	       		<td colspan="3">
+	       			<form method="post" action="?ctrl=cicle&act=view_cicle">
+	       				<select onchange="get_ciclo_info(this)" name="ciclo" type="text" class="form-control"/>
+	       					{{'ciclo'}}
+	       				</select>
+	       			</form>
+	       		</td>
+	       	</tr>
+	       	<tr>
+	       		<th colspan="4">Periodo del ciclo</th>
+	       	</tr>
+	    </table>
+	    <table class="table" id="periodo">
+	       	{{'inicia-periodo'}}
+		       	<tr>
+		       		<th>Inicio</th>
+		       		<td>{{'fechainicial'}}</td>
+		       		<th>Fin</th>
+		       		<td>{{'fechafinal'}}</td>
+		       	</tr>
+		       	<tr>
+		       		<th>Dias Libres</th>
+		       	</tr>
+		       	{{'inicia_nonworking'}}
+		       	<tr>
+		       		<td></td>
+		       		<td>{{'non_working'}}</td>
+		       	</tr>
+		       	{{'termina_nonworking'}}
+	       	{{'termina-periodo'}}
+       	</table>
+   	</div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+  </body>

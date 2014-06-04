@@ -1,0 +1,67 @@
+  <body>
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+    <form method="post" action="index.php?ctrl=course&act=create" class="form-horizontal" role="form">
+        <div class="container" id="contenedor_med">
+        <h2>Datos del Curso</h2>
+        <table class="table">
+        	<tr>
+        		<th>Maestro</th>
+        		<td colspan="2">
+                    {{'select_maestros'}}
+        		</td>
+        	</tr>
+            <tr>
+                <td></td>
+                <td>Selecciona la materia</td>
+                <td></td>
+                <td>Clave</td>
+            </tr>
+            <tr>
+                <th>Materia</th>
+                <td colspan="2">  
+                    <select onchange="materia_select(this)" id="selmateria" name="subject" type="text" class="form-control">{{'select_materia'}}
+                    </select>
+                </td>
+                <td><input onblur="materia_input(this)" onKeyUp="materia_input(this)" id="txtmateria" type="text" class="form-control" maxlength="5"/></td>
+            </tr>
+            <tr>
+                <th>NRC</th>
+                <td><input name="nrc" type="text" class="form-control" maxlength="5"/></td>
+                <th>Seccion</th>
+                <td><input onkeyUp="toUpper(this)" name="section" type="text" class="form-control" maxlength="3"/></td>
+            </tr>
+            <tr>
+                <th>Horario</th>
+            </tr>
+            <tr id="horario" name="horario">
+                    <th>Dia</th>
+                    <td> <select name="days[]" class="form-control"> {{'select_dia'}} </select> </td>
+                    <th>Horario</th>
+                    <td><select name="schedule[]" class="form-control"> {{'select_hora'}} </select></td>
+                    <th>Horas</th>
+                    <td><input type="number" name="hours[]" class="form-control" min="1" value="1"></td>
+                    <td>
+                        <button onClick="horario_a()" type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button><button onClick="horario_r(this)" type="button" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                    </td>
+            </tr>
+            <tr id="btn_submit">
+                <td></td><td></td>
+                <td><button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button></td>
+            </tr>
+        </table>
+    	</div>
+    </form>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/scripts.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>

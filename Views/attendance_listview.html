@@ -1,0 +1,56 @@
+<body>
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+    <div class="container table-responsive" id="contenedor_peq">
+			<h2>Datos de la Materia</h2>
+			<table class="table table-responsive">
+				<tr>
+					<th colspan="2" > Materia </th>
+					<td colspan="2"> {{'materia'}} </td>
+				</tr>
+				<tr>
+					<th colspan="2"> Clave </th>
+					<td colspan="2"> {{'clave_materia'}} </td>
+				</tr>
+				<tr>
+					<th> Seccion </th>
+					<td> {{'seccion'}} </td>	
+					<th> NRC </th>
+					<td> {{'nrc'}} </td>
+				</tr>
+				<tr>
+					<th colspan="4"> Horario </th>
+				<tr>
+				{{'inicia-horario'}}
+				</tr>
+					<td colspan="4"> {{'horario'}} </td>
+				</tr>
+				{{'termina-horario'}}
+			</table>
+    </div>
+	<div class="container"><h2>Asistencias</h2></div>
+    <div class="container table-responsive" id="contenedor_med">
+		<table class="table table-responsive table-bordered table-hover" id="tabla_asistencias_Verticales">
+			{{'asistencias'}}
+		</table>
+    </div>
+    <div class="container">
+    <form id="form_asistencias" method="post" action="index.php?ctrl=course&act=attendance" class="form-horizontal" role="form">
+    	<table class="table">
+    	<input type="hidden" name="courseid" value="{{'clave_curso'}}"/>
+    	<input type="hidden" name="nrc" value="{{'nrc'}}"/>
+    	<input type="hidden" name="ciclo" value="{{'ciclo'}}"/>
+    	{{'boton'}}
+    	</table>
+    </form>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+  </body>

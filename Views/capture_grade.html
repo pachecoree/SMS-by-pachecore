@@ -1,0 +1,79 @@
+	<body onload="busca_evaluacion()">
+		<section class="relleno">
+			<div class="menu-top">
+				{{'menu'}}
+			</div>
+		</section>
+		<div class="container" id="contenedor_peq">
+			<h2>Datos de la Materia</h2>
+			<table class="table table-responsive">
+				<tr>
+					<th colspan="2" > Materia </th>
+					<td colspan="2"> {{'materia'}} </td>
+				</tr>
+				<tr>
+					<th colspan="2"> Clave </th>
+					<td colspan="2"> {{'clave_materia'}} </td>
+				</tr>
+				<tr>
+					<th> Seccion </th>
+					<td> {{'seccion'}} </td>	
+					<th> NRC </th>
+					<td> {{'nrc'}} </td>
+				</tr>
+				<tr>
+					<th colspan="4"> Horario </th>
+				<tr>
+				{{'inicia-horario'}}
+				</tr>
+					<td colspan="4"> {{'horario'}} </td>
+				</tr>
+				{{'termina-horario'}}
+			</table>
+			<table class="table">
+				<tr>
+					<td>
+		                <label for="studentid">Codigo del Alumno</label>
+		                <select onchange="busca_evaluacion()" onblur="busca_evaluacion()" id="studentid" name="studentid" type="text" class="form-control"/>
+		                  {{'codigos'}}
+		                </select>
+					</td>
+					<td>
+		                <label for="fields">Rubro</label>
+		                <select onchange="busca_evaluacion()" onblur="busca_evaluacion()" id="fields" name="fields" type="text" class="form-control"/>
+		                  {{'rubros'}}
+		                </select>
+					</td>
+				</tr>
+			</table>
+		</div>
+	    <form id="form_calificaciones" method="post" action="index.php?ctrl=course&act=capture" class="form-horizontal" role="form">
+	    <div class="container" id="contenedor_med">
+	    	<table  class="table table-nonfluid table-responsive table-bordered" id="detalles_rubro">
+	    	</table>
+	    	<table class="table">
+	    		<tr>
+			    	<input type="hidden" name="nrc" value="{{'nrc'}}" id="h_nrc"/>
+			    	<input type="hidden" name="ciclo" value="{{'ciclo'}}" id="h_ciclo"/>
+			    	<input type="hidden" name="studentid" id="h_studentid"/>
+			    	<input type="hidden" name="field" id="h_field"/>
+			    	<td></td>
+			    	<td></td>
+			    	<td></td>
+			    	<td></td>
+			  		<td><button type="submit" class="btn btn-primary btn-block">Guardar Calificaciones</button></td>
+	    			<td></td>
+	    			<td></td>
+	    			<td></td>
+	    			<td></td>
+	    		</tr>
+	    	</table>
+	    </div>
+	    </form>
+	    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	    <!-- Include all compiled plugins (below), or include individual files as needed -->
+	    <script src="js/bootstrap.min.js"></script>
+	    <script type="text/javascript" src="js/scripts.js"></script>
+	    <script type="text/javascript" src="js/ajax.js"></script>
+	</body>

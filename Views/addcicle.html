@@ -1,0 +1,41 @@
+  <body>
+    <section class="relleno">
+        <div class="menu-top">
+            {{'menu'}}
+        </div>
+    </section>
+    <form method="post" action="index.php?ctrl=cicle&act=add" class="form-horizontal" role="form">
+        <div class="container" id="contenedor_peq">
+        <h2>Datos del Ciclo</h2>
+        <table class="table">
+            <tr>
+                <td colspan="1"><label for="ciclo"/>Ciclo</label><input type="text" class="form-control" id="ciclo" name="cicle"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><label>Inicio de Curso</label> <input type="date" class="form-control" name="begindate" value="2000-01-01"/></td>
+                <td colspan="2"><label>Fin de Curso</label> <input type="date" class="form-control" name="enddate" value="2000-01-01"/></td>
+            </tr>
+            <tr id="ciclo_libres">
+                <td><label>Dias Libres</label> </td>
+                <td> <input type="date" class="form-control" name="nonworking[]" value="2000-01-01"/></td>
+                <td>
+                    <button onClick="dias_libres_a()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
+                    <button onClick="dias_libres_r(this)" type="button" class="btn btn-default btn-sm">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </button>
+                </td>
+            </tr>
+            <tr id="btn_submit">
+                <td></td>
+                <td><button class="btn btn-primary btn-block" type="submit">Crear Ciclo</button></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+     </form>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+  </body>

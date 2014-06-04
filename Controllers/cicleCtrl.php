@@ -14,48 +14,71 @@ class cicleCtrl{
 		#Create the validation object 
 		require('Controllers/validationCtrl.php');
 		$this -> validation = new validationCtrl();
+		require('Controllers/mailCtrl.php');
+		$this -> emailCtrl = new mailCtrl();
+		require('Controllers/templatesCtrl.php');
+		$this -> templateCtrl = new templatesCtrl();
 	}
 
 	function run() {
 		#Check if the activity was input
 		if (isset($_GET['act'])) {
 			switch ($_GET['act']) {
+				case 'new':
+					$session = $this -> validation -> active_session();
+					if ($session >= 3) {
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/addcicle.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						echo $header . $content . $footer;
+					}
+					else if ($session == false) {
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,-1);
+						echo $header.$content.$footer;
+					}
+					else {
+						$this -> errors -> not_valid_usertype();
+					}
+					break;
 				case 'add':
 					$session = $this -> validation -> active_session();
 					if ($session >= 3) {
 						#Check if cicle exists
-						if (isset($_GET['cicle'])) {
+						if (isset($_POST['cicle'])) {
 							#Validate if cicle is correct
-							if ($this -> validation -> validate_cicle($_GET['cicle'])) {
+							if ($this -> validation -> validate_cicle($_POST['cicle'])) {
 								#The cicle format is correct
 								#Check if both start and end of cicle dates exists
-								if (isset($_GET['begindate']) && isset($_GET['enddate'])) {
+								if (isset($_POST['begindate']) && isset($_POST['enddate']) && $_POST['begindate'] != "" && $_POST['enddate'] != "") {
 									#Validate if dates are correct
-									$fechainicial = $this -> validation -> validate_date($_GET['begindate']);
-									$fechafinal = $this -> validation -> validate_date($_GET['enddate']);
+									$fechainicial = $this -> validation -> validate_date($_POST['begindate']);
+									$fechafinal = $this -> validation -> validate_date($_POST['enddate']);
 									if (!($this -> validation -> compare_dates($fechainicial,$fechafinal))) {
 										$this -> errors -> date_range_fail();
 										return;
 									}
-
 									if ( (!is_bool($fechainicial)) && (!is_bool($fechafinal))) {
 										#Check if non working days exists
-										if (isset($_GET['nonworking'])) {
+										if (isset($_POST['nonworking'])) {
 											$non_workingarray = array();
-											if (is_array($_GET['nonworking'])) {
-												while (list($key,$date) = each($_GET['nonworking'])) {
-													$date = $this->validation -> validate_date($date);
-													if (!is_bool($date)) {
-														$non_workingarray[] = $date;
+											if (is_array($_POST['nonworking'])) {
+												while (list($key,$date) = each($_POST['nonworking'])) {
+													$date_ = $this->validation -> validate_nonworking($date,$fechainicial,$fechafinal);
+													if ($date_) {
+														$non_workingarray[] = new DateTime($date);
 													}
 													else {
-														$this -> errors ->not_valid_date($date);
+														$this -> errors ->date_not_valid($date);
 														return;
 													}
 												}
 											}
 											else {
-												$date = $this -> validation -> validate_date($_GET['nonworking']);
+												$date = $this -> validation -> validate_date($_POST['nonworking']);
 												if (!is_bool($date)) {
 													$non_workingarray[] = $date;
 												}
@@ -66,18 +89,26 @@ class cicleCtrl{
 											}
 										}
 										#Send the data to the model
-										$ciclo = $_GET['cicle'];
+										$ciclo = $_POST['cicle'];
 										$cicle_array = array ( 'clave_ciclo' => $ciclo,
 															   'inicio' => $fechainicial,
 															   'fin' => $fechafinal);
 										$cicle_return = $this -> cicleMdl -> add_cicle($cicle_array,$non_workingarray);
 										if ($cicle_return == true) {
 											#Cicle created correctly
-											require('Views/cicleview.php');
+											//require('Views/cicleview.php');//
+											$footer = file_get_contents('Views/Footer.html');
+											$header = file_get_contents('Views/Head.html');
+											$content = file_get_contents('Views/cicleview.html');
+											$content = $this -> templateCtrl -> get_menu($content);
+											$cicle_array = $this -> cicleMdl -> std_obj -> get_cicleinfo(null);
+											$non_workingarray = $this -> cicleMdl -> std_obj -> get_nonworking($cicle_array['clave_ciclo']);
+											$content = $this -> templateCtrl -> procesarPlantilla_cicleview($content,$cicle_array,$non_workingarray);
+											echo $header . $content . $footer;
 										}
 										else {
 											#Cicle creation failed
-											$this -> errors -> error_add_cicle($_GET['cicle']); 
+											$this -> errors -> error_add_cicle($_POST['cicle']); 
 										}
 										return;
 									}
@@ -93,23 +124,55 @@ class cicleCtrl{
 							}
 							else {
 								#Cicle format is incorrect
-								$this -> errors -> not_valid_format($_GET['cicle'],'cicle');
+								$this -> errors -> not_valid_format($_POST['cicle'],'cicle');
 							}
 						}
 						else {
 							#Cicle was not input
 							$this -> errors -> not_found_input('Cicle');
+
 							return;
 						}
 					}
 					else if ($session == false) {
-						$this -> errors -> not_logged_in();
+						$header = file_get_contents('Views/Head.html');
+						$footer = file_get_contents('Views/Footer.html');
+						$content = file_get_contents('Views/login.html');
+						$content = $this -> templateCtrl -> procesarPlantilla_login($content,0);
+						echo $header.$content.$footer;
 					}
 					else {
 						$this -> errors -> not_valid_usertype();
 					}
 					break;
-		
+			case 'view_cicle' :
+				$session = $this -> validation -> active_session();
+				if ($session >= 1) {
+					$footer = file_get_contents('Views/Footer.html');
+					$header = file_get_contents('Views/Head.html');
+					$content = file_get_contents('Views/cicleview.html');
+					$content = $this -> templateCtrl -> get_menu($content);
+					if (isset($_POST['ciclo'])) {
+						$cicle_array = $this -> cicleMdl -> std_obj -> get_cicleinfo($_POST['ciclo']);
+						$non_workingarray = $this -> cicleMdl -> std_obj -> get_nonworking($cicle_array['clave_ciclo']);
+						echo $this -> templateCtrl -> procesarPlantilla_cicleviewcontent($content,$cicle_array,$non_workingarray);
+					}
+					else {
+						$cicle_array = $this -> cicleMdl -> std_obj -> get_cicleinfo(null);
+					$cicles = $this -> cicleMdl -> std_obj -> get_all_cicles();
+					$non_workingarray = $this -> cicleMdl -> std_obj -> get_nonworking($cicle_array['clave_ciclo']);
+					$content = $this -> templateCtrl -> procesarPlantilla_cicleview($content,$cicle_array,$non_workingarray,$cicles);
+					echo $header . $content . $footer;
+					}
+				}
+				else if ($session == false) {
+					$header = file_get_contents('Views/Head.html');
+					$footer = file_get_contents('Views/Footer.html');
+					$content = file_get_contents('Views/login.html');
+					$content = $this -> templateCtrl -> procesarPlantilla_login($content,0);
+					echo $header.$content.$footer;
+				}
+				break;
 			case 'modify':
 					#Disabling module
 					$this -> errors -> module_disabled();
