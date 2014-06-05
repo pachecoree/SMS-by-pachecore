@@ -108,7 +108,7 @@
 									$this -> start_session($usuario['usuario'],$usuario['type'],$usuario['userid']);
 									$header = file_get_contents('Views/Head.html');
 									$footer = file_get_contents('Views/Footer.html');
-									if ($this -> mdl_obj -> get_generica($usuario['userid'])) {
+									if ($this -> mdl_obj -> get_generica($usuario['userid'],$_SESSION['type'])) {
 										$_SESSION['pass'] = $_POST['password'];
 										$content = file_get_contents('Views/change_password.html');
 										$content = str_replace("{{'mensaje'}}", 'Por razones de seguridad, Cambie su contrasenha', $content);

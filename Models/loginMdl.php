@@ -6,8 +6,11 @@ class loginMdl {
 		$this -> db_driver = $driver;
 	}
 
-	function get_generica($userid) {
-		$prepare = "SELECT clave_generica FROM users_student WHERE userid = ?";
+	function get_generica($userid,$session) {
+		if ($session == 1) $tabla = 'users_student';
+		else if ($session == 2) $tabla = 'users_teacher';
+		else if ($session == 3) $tabla = 'users_admin';
+		$prepare = "SELECT clave_generica FROM $tabla WHERE userid = ?";
 		if ($query = $this -> db_driver->prepare($prepare)) {
 			$query -> bind_param('s',$userid);
 	    	$query->execute();
@@ -31,8 +34,8 @@ class loginMdl {
 			$query -> bind_param("ss",$pass,$userid);
 			$query -> execute();
 		}
-		if ($session == 1) {
-	 		$prepare = "UPDATE $tabla SET clave_generica = 0 WHERE userid = ?";
+	 	$prepare = "UPDATE $tabla SET clave_generica = 0 WHERE userid = ?";
+		if ($session != 3) {
 			if ($query = $this -> db_driver -> prepare($prepare)) {
 				$query -> bind_param("s",$userid);
 				$query -> execute();

@@ -1,0 +1,12 @@
+<?php
+
+class teacherMdl {
+	
+	function __construct($driver) {
+		$this -> db_driver = $driver;
+		require('Models/stdMdl.php');
+		$this -> std_obj = new stdMdl($driver);
+	}
+
+}
+?>

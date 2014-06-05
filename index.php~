@@ -45,13 +45,6 @@
 				$ctrl -> run();
 				break;
 
-			case 'teacher':
-				#Load student controller
-				require('Controllers/teacherCtrl.php');
-				$ctrl = new teacherCtrl($db_driver);
-				$ctrl -> run();
-				break;
-
 			default:
 				#Controller was not valid
 				echo 'Controller ',$_GET['ctrl'],' is not valid';
@@ -59,25 +52,7 @@
 		}
 	}
 	else {
-		require('Controllers/validationCtrl.php');
-		require('Controllers/templatesCtrl.php');
-		require('Controllers/mailCtrl.php');
-		$templateCtrl = new templatesCtrl();
-		$emailCtrl = new mailCtrl();
-		$validation = new validationCtrl();
-		$header = file_get_contents('Views/Head.html');
-		$footer = file_get_contents('Views/Footer.html');
-		
-		if (!$validation->active_session()) {
-			$content = file_get_contents('Views/login.html');
-			$content = $templateCtrl -> procesarPlantilla_login($content,-1);
-		}
-		else {
-			$content = file_get_contents('Views/logincorrectly.html');
-			$content = $templateCtrl -> get_menu($content);
-		}
-		echo $header.$content.$footer;
 		#Controller was not input
-		//echo 'The controller was not found';
+		echo 'The controller was not found';
 	}
 ?>

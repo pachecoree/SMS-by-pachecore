@@ -282,6 +282,14 @@ class templatesCtrl {
 		return $content;
 	}
 
+		function procesarPlantilla_teacherview($content,$teacher) {
+			$content = str_replace("{{'codigo'}}", $teacher['codigo'],$content);
+			$content = str_replace("{{'estado'}}", $teacher['estado'],$content);
+			$content = str_replace("{{'nombre'}}", $teacher['nombre'],$content);
+			$content = str_replace("{{'correo'}}", $teacher['correo'],$content);
+			$content = str_replace("{{'celular'}}", $teacher['celular'],$content);
+			return $content;
+		}
 
 		function procesarPlantilla_studentview($content,$student) {
 			$content = str_replace("{{'codigo'}}", $student['codigo'],$content);
@@ -364,7 +372,7 @@ class templatesCtrl {
 			$horario = $horario . $sub_horario_aux;
 		}
 		$boton = '';
-		if ($band_ciclo) {
+		if ($band_ciclo && $_SESSION['type'] != 1){
 			$boton = '<button class="btn btn-primary btn-block" type="submit">Capturar Calificaciones</button>';
 		}
 		$content = str_replace("{{'boton'}}", $boton,$content);
@@ -476,7 +484,7 @@ class templatesCtrl {
 			}
 		}
 		$boton = '';
-		if ($band_ciclo) {
+		if ($band_ciclo && $_SESSION['type'] != 1) {
 			$boton = '<button class="btn btn-primary btn-block" type="submit">Guardar</button>';
 		}
 		$content = str_replace("{{'boton'}}", $boton,$content);
@@ -543,7 +551,7 @@ class templatesCtrl {
 			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Profesor <span class="caret"></span></button>
 					  <ul class="dropdown-menu">
-					  <li><a href="">MENU 1</a></li>
+					  <li><a href="?ctrl=teacher&act=new">Agregar Maestro</a></li>
 					  <li><a href="">MENU 2</a></li>
 					  <li><a href="">MENU 3</a></li>
 					  </ul></div>';

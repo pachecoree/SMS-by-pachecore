@@ -9,7 +9,7 @@ class studentMdl {
 	}
 	
 	function add_student($student) {
-
+		$ciclo = $this -> std_obj -> get_cicle();
 		#Gets the student info
 		#Goes to the DB to add the student, and add the "Active" status
 		#will return array if it was succesfull , false if it fails
@@ -50,10 +50,10 @@ class studentMdl {
 			return false;
 
 		#Add Student to System
-		$prepare = "INSERT INTO users_student VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		$prepare = "INSERT INTO users_student VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		if ($query = $this -> db_driver -> prepare($prepare)) {
 			$query -> bind_param("ssssssssssisi",$userid,$password,$nombre,$primer_a,$segundo_a,
-								 $nacimiento,$correo,$github,$celular,$web,$i=1,$clave_carrera,$i=1);
+								 $nacimiento,$correo,$github,$celular,$web,$i=1,$clave_carrera,$i=1,$ciclo);
 			if (!$query -> execute()) {
 				return false;
 			}

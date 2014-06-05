@@ -7,6 +7,7 @@ class mailCtrl {
 	}
 
 	function send_mail($body,$adress,$name) {
+		require('Models/phpmailer.inc');
 	  	$mail = new PHPMailer();
 		$mail->IsSMTP(); // Use SMTP
 	  	$mail->Host        = "smtp.live.com"; // Sets SMTP server
@@ -14,8 +15,8 @@ class mailCtrl {
 		$mail->SMTPAuth    = TRUE; // enable SMTP authentication
 	    $mail->SMTPSecure  = "tls"; //Secure conection
 	    $mail->Port        = 587; // set the SMTP port
-	    $mail->Username    = 'pacheco2590@hotmail.com'; // SMTP account username
-	    $mail->Password    = '@tlascontodo51'; // SMTP account password
+	    $mail->Username    = $username; // SMTP account username
+	    $mail->Password    = $password; // SMTP account password
 	    $mail->Priority    = 1; // Highest priority - Email priority (1 = High, 3 = Normal, 5 = low)
 	    $mail->CharSet     = 'UTF-8';
 	    $mail->Encoding    = '8bit';

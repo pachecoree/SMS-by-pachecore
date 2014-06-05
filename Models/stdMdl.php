@@ -227,6 +227,38 @@ class stdMdl {
 		return false;
 	}
 
+
+	function buscar_maestro($userid) {
+		$info_maestro = array();
+
+		$statement = "SELECT us.userid as codigo, CONCAT(us.nombre,' ',us.primer_a,' ',us.segundo_a) as nombre, us.correo as correo,
+					us.celular as celular,eu.estado as estado,
+					us.clave_generica as generica
+					FROM users_teacher as us
+					JOIN Estado_usuario as eu ON eu.clave_estado = us.clave_estado
+					WHERE userid = '$userid'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				if ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					$info_maestro['codigo'] = $query['codigo'];
+					$info_maestro['nombre'] = $query['nombre'];
+					$info_maestro['estado'] = $query['estado'];
+					$info_maestro['correo'] = $query['correo'];
+					$info_maestro['celular'] = $query['celular'];
+					if ($query['generica'] == 1) {
+						$info_maestro['generica'] = $query['generica'];
+					}
+				}
+				else
+					return false;
+			}
+			$result -> close();
+		}
+
+		return $info_maestro;
+	}
+
 	function buscar_alumno($userid) {
 		$info_alumno = array();
 
@@ -600,6 +632,51 @@ class stdMdl {
 			$result -> close();
 		}
 		return $cursos;
+	}
+
+	function add_teacher($teacher) {
+		$ciclo = $this -> get_cicle();
+		#Gets the student info
+		#Goes to the DB to add the student, and add the "Active" status
+		#will return array if it was succesfull , false if it fails
+		$userid =strtoupper($teacher['teacherid']);
+		$password = strtoupper($teacher['password']);
+		$nombre = strtoupper($teacher['name']);
+		$primer_a = strtoupper($teacher['first']);
+		$segundo_a = strtoupper($teacher['second']);
+		$correo = strtoupper($teacher['email']);
+		$celular = strtoupper($teacher['cellphone']);
+
+		#Check if Student ID is not already in DB
+		$statement = "SELECT userid FROM users_teacher WHERE userid = '$userid'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result = $query -> store_result()) {
+				if ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
+					return false;
+				}
+			}
+			$result -> close();
+		}
+		else
+			return false;
+
+		#Add Student to System
+		$prepare = "INSERT INTO users_teacher VALUES (?,?,?,?,?,?,?,?,?,?)";
+		if ($query = $this -> db_driver -> prepare($prepare)) {
+			$query -> bind_param("sssssssiis",$userid,$password,$nombre,$primer_a,$segundo_a,
+								 $correo,$celular,$i=1,$i=1,$ciclo);
+			if (!$query -> execute()) {
+				return false;
+			}
+		}
+
+		#Get values to create  array with all user information from database
+	    #
+		$return_array = $this -> buscar_maestro($userid);
+		if ($return_array == false)
+			return false;
+		return $return_array;
 	}
 
 }

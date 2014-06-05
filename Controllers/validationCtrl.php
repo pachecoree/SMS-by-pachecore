@@ -193,6 +193,16 @@ class validationCtrl {
 		return false;
 	}
 
+	function validate_tid($tid) {
+		#Check if format was correctly input
+		$pattern = '/^[0-9d][0-9]{5,7}$/i';
+		if (preg_match($pattern,$tid) == 1) {
+			return true;
+		}
+		#Teacher ID is not valid
+		return false;
+	}
+
 	function validate_sid($sid) {
 		#Check if format was correctly input
 		$pattern = '/^[0-9d][0-9]{8}$/i';

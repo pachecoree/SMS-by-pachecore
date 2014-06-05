@@ -505,11 +505,15 @@ class studentCtrl {
 										if ($this -> validation -> validate_nrc($_POST['nrc'])) {
 											if (isset($_POST['details'])) {
 												$grade_array = $this -> obj_mdl -> view_student_courseDetails($_POST['nrc'].$_POST['cicle'],$_SESSION['userid']);
-												$subject_array = $this -> obj_mdl -> std_obj -> obtener_curso($_POST['nrc']);
+												$subject_array = $this -> obj_mdl -> std_obj -> obtener_curso($_POST['nrc'],$_POST['cicle']);
 												$header = file_get_contents('Views/Head.html');
 												$content = file_get_contents('Views/grade_listview.html');
 												$footer = file_get_contents('Views/Footer.html');
-												$content = $this -> templateCtrl -> procesarPlantilla_grade_listview($content,$grade_array,$subject_array);
+												$ciclo = $this -> obj_mdl -> std_obj -> get_cicle();
+													$band_ciclo = false;
+													if ($ciclo == $_POST['cicle']) $band_ciclo = true;
+												$clave_curso = $_POST['nrc'].$_POST['cicle'];
+												$content = $this -> templateCtrl -> procesarPlantilla_grade_listview($content,$grade_array,$subject_array,$band_ciclo,$ciclo);
 												$content = $this -> templateCtrl -> get_menu($content);
 												echo $header . $content . $footer;
 												return;
@@ -518,11 +522,16 @@ class studentCtrl {
 											if (is_array($course_info)) {
 												#Get the View
 												//require('Views/student_courseview.php');
-												$subject_array = $this -> obj_mdl -> std_obj -> obtener_curso($_POST['nrc']);
+												$subject_array = $this -> obj_mdl -> std_obj -> obtener_curso($_POST['nrc'],$_POST['cicle']);
+												$hoy = $this -> obj_mdl -> std_obj -> obtener_dia();
+												$ciclo = $this -> obj_mdl -> std_obj -> get_cicle();
+													$band_ciclo = false;
+													if ($ciclo == $_POST['cicle']) $band_ciclo = true;
+												$clave_curso = $_POST['nrc'].$_POST['cicle'];
 												$header = file_get_contents('Views/Head.html');
 												$content = file_get_contents('Views/attendance_listview.html');
 												$footer = file_get_contents('Views/Footer.html');
-												$content = $this -> templateCtrl -> procesarPlantilla_attendance_listview($content,$course_info,$subject_array);
+												$content = $this -> templateCtrl -> procesarPlantilla_attendance_listview($content,$course_info,$subject_array,$hoy,$clave_curso,$band_ciclo,$_POST['cicle']);
 												$content = $this -> templateCtrl -> get_menu($content);
 												echo $header . $content . $footer;
 											}
