@@ -54,8 +54,32 @@
 				</tbody>
 			</table>
 		</div>
+		<form method="post" action="index.php?ctrl=course&act=viewcourse" class="form-horizontal" role="form">
+	    <div class="container" id="contenedor_med">
+	    	<table  class="table table-nonfluid table-responsive" id="detalles_rubro">
+	    	</table>
+	    	<table class="table">
+	    		<tr>
+			    	<input type="hidden" name="nrc" value="{{'nrc'}}" id="h_nrc"/>
+			    	<input type="hidden" name="ciclo" value="{{'ciclo'}}" id="h_ciclo"/>
+			    	<td></td>
+			    	<td></td>
+			    	<td></td>
+			    	<td></td>
+			  		<td><button type="submit" class="btn btn-primary btn-block">Regresar</button></td>
+	    			<td></td>
+	    			<td></td>
+	    			<td></td>
+	    			<td></td>
+	    		</tr>
+	    	</table>
+	    </div>
+		</form>
 	    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	    <!-- Include all compiled plugins (below), or include individual files as needed -->
 	    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/match.js"></script>
 	</body>

@@ -57,7 +57,7 @@ class validationCtrl {
 
 	function validate_cicle($cicle) {
 		#Check if format was correctly input
-		$pattern = '/^[2][0-9]{3}[AB]$/i';
+		$pattern = '/^[2][0-9]{3}[ABV]$/i';
 		if (preg_match($pattern,$cicle) == 1) {
 			return true;
 		}
@@ -236,7 +236,7 @@ class validationCtrl {
 
 	function validate_github($github) {
 		#Check if format was correctly input
-		$pattern = '/^[a-z1-9][a-z1-9-]{1,}$/';
+		$pattern = '/^[a-z0-9][a-z0-9-]{1,}$/i';
 		if (preg_match($pattern,$github) == 1) {
 			return true;
 		}

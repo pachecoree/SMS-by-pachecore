@@ -212,7 +212,13 @@ class studentCtrl {
 								echo $header . $content . $footer;
 							}
 							else {
-								echo ' no se pudo actualizar la informacion';
+								$footer = file_get_contents('Views/Footer.html');
+								$header = file_get_contents('Views/Head.html');
+								$content = file_get_contents('Views/error.html');
+								$content = $this -> templateCtrl -> get_menu($content);
+								$mensaje = "No se pudo Agtualizar la informacion  ";
+								$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+								echo $header .$content.$footer;
 							}
 						}
 					}
@@ -290,6 +296,7 @@ class studentCtrl {
 														if ($bandera_datos == 0) {
 															#Fill Student array
 															$student['password'] = $this -> genera_password();
+															$pass = $student['password'];
 															$student['nacimiento'] = $_POST['nacimiento'];
 															$student['name'] = $_POST['name'];
 															$student['first'] = $_POST['first'];
@@ -301,7 +308,7 @@ class studentCtrl {
 															if (is_array($student)) {
 																#Set action
 																$student['action'] = "Added";
-																#Get the View
+																$this -> emailCtrl -> send_mail($this -> emailCtrl -> registration($student['nombre'],$student['codigo'],$pass),$student['correo'],$student['nombre'],'Registro de Usuario');
 																$footer = file_get_contents('Views/Footer.html');
 																$header = file_get_contents('Views/Head.html');
 																$content = file_get_contents('Views/studentview.html');
@@ -312,7 +319,14 @@ class studentCtrl {
 															}
 															else {
 																#Display the add error
-																$this -> errors -> error_add_student($_POST['first'].' '.$_POST['second'].' '. $_POST['name']);
+																//$this -> errors -> error_add_student($_POST['first'].' '.$_POST['second'].' '. $_POST['name']);
+																$footer = file_get_contents('Views/Footer.html');
+																$header = file_get_contents('Views/Head.html');
+																$content = file_get_contents('Views/error.html');
+																$content = $this -> templateCtrl -> get_menu($content);
+																$mensaje = "No se pudo Agregar al Estudiante ".$_POST['name'].' '.$_POST['first'].' '.$_POST['second'];
+																$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+																echo $header .$content.$footer;
 															}
 														}
 													}
@@ -393,11 +407,8 @@ class studentCtrl {
 									$student = $this -> obj_mdl -> modify_status(strtoupper($_POST['studentid']),$value);
 									if (is_array($student)) {
 										#Set action
-										$student['action'] = "Status Modified";
 										#Get the view
-										$body = 'Tu Status ha sido Modificado , por favor revisa los cambios';
-										//$this -> mailCtrl -> send_mail($body,$student['correo'],$student['nombre']);
-										//require('Views/studentview.php');
+										$this -> emailCtrl -> send_mail($this -> emailCtrl -> status_change($student['nombre']),$student['correo'],$student['nombre'],'Cambio en tu Estatus');
 										$footer = file_get_contents('Views/Footer.html');
 										$header = file_get_contents('Views/Head.html');
 										$content = file_get_contents('Views/studentview.html');

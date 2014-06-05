@@ -101,14 +101,21 @@ class cicleCtrl{
 											$header = file_get_contents('Views/Head.html');
 											$content = file_get_contents('Views/cicleview.html');
 											$content = $this -> templateCtrl -> get_menu($content);
+											$ciclos = $this -> cicleMdl -> std_obj -> get_all_cicles();
 											$cicle_array = $this -> cicleMdl -> std_obj -> get_cicleinfo(null);
 											$non_workingarray = $this -> cicleMdl -> std_obj -> get_nonworking($cicle_array['clave_ciclo']);
-											$content = $this -> templateCtrl -> procesarPlantilla_cicleview($content,$cicle_array,$non_workingarray);
+											$content = $this -> templateCtrl -> procesarPlantilla_cicleview($content,$cicle_array,$non_workingarray,$ciclos);
 											echo $header . $content . $footer;
 										}
 										else {
 											#Cicle creation failed
-											$this -> errors -> error_add_cicle($_POST['cicle']); 
+											$footer = file_get_contents('Views/Footer.html');
+											$header = file_get_contents('Views/Head.html');
+											$content = file_get_contents('Views/error.html');
+											$content = $this -> templateCtrl -> get_menu($content);
+											$mensaje = "No se pudo Agregar el Ciclo ".$_POST['cicle'];
+											$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+											echo $header .$content.$footer;
 										}
 										return;
 									}

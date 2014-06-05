@@ -52,7 +52,7 @@ class studentMdl {
 		#Add Student to System
 		$prepare = "INSERT INTO users_student VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		if ($query = $this -> db_driver -> prepare($prepare)) {
-			$query -> bind_param("ssssssssssisi",$userid,$password,$nombre,$primer_a,$segundo_a,
+			$query -> bind_param("ssssssssssisis",$userid,$password,$nombre,$primer_a,$segundo_a,
 								 $nacimiento,$correo,$github,$celular,$web,$i=1,$clave_carrera,$i=1,$ciclo);
 			if (!$query -> execute()) {
 				return false;

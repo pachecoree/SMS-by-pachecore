@@ -227,6 +227,46 @@ class courseMdl {
 		return $student_info;
 	}
 
+	function get_email($codigo) {
+		$statement = "SELECT correo,CONCAT(nombre,' ',primer_a,' ',segundo_a) as nombre FROM users_student WHERE userid = '$codigo'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					$student['correo'] = $query['correo'];
+					$student['nombre'] = $query['nombre'];
+				}
+			$result -> close();
+		}
+		return $student;
+	}
+
+	function get_curso_name($clave_curso) {
+		$statement = "SELECT nombre FROM Materia AS m
+					  JOIN Curso AS c ON c.clave_materia = m.clave_materia
+					  WHERE c.clave_curso =  '$clave_curso'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					return $query['nombre'];
+				}
+			$result -> close();
+		}
+	}
+
+	function get_field_name($clave_rubro) {
+		$statement = "SELECT actividad FROM Rubro WHERE clave_rubro = '$clave_rubro'";
+		$query = $this -> db_driver;
+		if ($query -> real_query($statement)) {
+			if ($result =$query -> store_result())
+				if ($query= $result -> fetch_array(MYSQLI_ASSOC)) {
+					return $query['actividad'];
+				}
+			$result -> close();
+		}
+	}
+
 
 	function view_course_attendance($nrc,$clave_ciclo) {
 		#Go to the DB and get all students in actual the course
@@ -253,7 +293,10 @@ class courseMdl {
 
 
 	 	$clave_curso = $nrc.$clave_ciclo;
-		$statement = "SELECT codigo_alumno,asistencia,dia From Asistencia where clave_curso = '$clave_curso' ORDER BY dia ASC";
+		$statement = "SELECT codigo_alumno,asistencia,dia
+		              From Asistencia
+		              JOIN users_student as us ON us.userid = codigo_alumno
+		              where clave_curso = '$clave_curso' AND us.clave_estado = 1 ORDER BY dia ASC";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
 			if ($result =$query -> store_result())
@@ -278,7 +321,7 @@ class courseMdl {
 					  FROM Lista AS l
                       JOIN users_student AS us ON us.userid = l.codigo_alumno
 					  JOIN Carrera AS c ON c.clave_carrera = us.clave_carrera
-					  WHERE l.clave_curso = '$clave_curso' ORDER BY nombre ASC";
+					  WHERE l.clave_curso = '$clave_curso' AND us.clave_estado = 1 ORDER BY nombre ASC";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
 			if ($result = $query -> store_result()) {
@@ -328,8 +371,10 @@ class courseMdl {
 		**/
 		$statement = "SELECT c.codigo_alumno as codigo, r.actividad as actividad,
 		r.porcentaje as porcentaje,c.calificacion as calificacion,((c.calificacion * r.porcentaje)/10) as puntos
-	  	FROM Calificacion c JOIN Rubro as r ON c.clave_rubro = r.clave_rubro
-		WHERE c.clave_curso ='$clave_curso' ORDER BY r.clave_rubro ASC";
+	  	FROM Calificacion c
+	  	JOIN users_student as us ON us.userid = c.codigo_alumno
+	  	JOIN Rubro as r ON c.clave_rubro = r.clave_rubro
+		WHERE c.clave_curso ='$clave_curso' AND us.clave_estado = 1 ORDER BY r.clave_rubro ASC";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
 			if ($result = $query -> store_result()) {

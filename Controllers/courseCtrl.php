@@ -212,7 +212,13 @@ class courseCtrl {
 														}
 														else {
 															#Error adding course
-															$this -> errors -> error_add_course($_POST['subject']);
+																$footer = file_get_contents('Views/Footer.html');
+																$header = file_get_contents('Views/Head.html');
+																$content = file_get_contents('Views/error.html');
+																$content = $this -> templateCtrl -> get_menu($content);
+																$mensaje = "No se pudo Agregar el Curso  ".$_POST['subject'];
+																$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+																echo $header .$content.$footer;
 														}
 													}
 													else {
@@ -362,7 +368,13 @@ class courseCtrl {
 																		}
 																		else {
 																			#Error adding course
-																			$this -> errors -> error_add_course($_POST['subject']);
+																			$footer = file_get_contents('Views/Footer.html');
+																			$header = file_get_contents('Views/Head.html');
+																			$content = file_get_contents('Views/error.html');
+																			$content = $this -> templateCtrl -> get_menu($content);
+																			$mensaje = "No se pudo Clonar el Curso  ".$_POST['subject'];
+																			$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+																			echo $header .$content.$footer;
 																		}
 																	}
 																	else {
@@ -448,7 +460,7 @@ class courseCtrl {
 									$header = file_get_contents('Views/Head.html');
 									$content = file_get_contents('Views/course_listview.html');
 									$footer = file_get_contents('Views/Footer.html');
-									$content = $this -> templateCtrl -> procesarPlantilla_course_listview($content,$students_array,$subject_array);
+									$content = $this -> templateCtrl -> procesarPlantilla_course_listview($content,$students_array,$subject_array,$_POST['ciclo']);
 									$content = $this -> templateCtrl -> get_menu($content);
 									echo $header . $content . $footer;
 								}
@@ -680,12 +692,14 @@ class courseCtrl {
 					$session = $this -> validation -> active_session();
 					#Check account privileges
 					if ($session >= 2) {
-						if (isset($_POST['clave_curso'])) {
+						if (isset($_POST['clave_curso']) && isset($_POST['nrc']) && isset($_POST['ciclo'])) {
 							$rubros = $this -> mdl_obj -> std_obj -> get_rubros($_POST['clave_curso']);
 							$header = file_get_contents('Views/Head.html');
 							$footer = file_get_contents('Views/Footer.html');
 							$content = file_get_contents('Views/viewfields.html');
 							$content = $this -> templateCtrl -> get_menu($content);
+							$content = str_replace("{{'nrc'}}",$_POST['nrc'],$content);
+							$content = str_replace("{{'ciclo'}}",$_POST['ciclo'],$content);
 							$content = $this -> templateCtrl -> procesarPlantilla_viewfields($content,$rubros);
 							echo $header.$content.$footer;
 						}
@@ -931,7 +945,8 @@ class courseCtrl {
 									<th>Calificacion</th>
 									</tr>
 									<tr>
-									<td><input name="grade[]" type="text" class="form-control" value="'.$calificacion_rubro.'" required></input>
+									<td><div class="form-group">
+									<input onblur="validate_grade(this);" name="grade[]" type="text" class="form-control" value="'.$calificacion_rubro.'" required></input></div>
 									</td></tr>
 								';
 								echo $cadena;
@@ -942,12 +957,13 @@ class courseCtrl {
 								$i = 1;
 								$cadena = '<tr>';
 								while ($i <= $rubro['nocol']) {
-									$cadena .= '<th>Columna '.$i++.'</th>'; 
+									$cadena .= '<th>Columna '.$i++.'</th><th></th>'; 
 								}
 								$cadena .= '</tr><tr>';
 								$i = 0;
 								while ($i < sizeof($calificacion_rubros)) {
-									$cadena .= '<td><input name="grade[]" type="text" class="form-control" value="'.$calificacion_rubros[$i++].'" required></input></td>';
+									$cadena .= '<td><div class="form-group">
+									<input onblur="validate_grade(this)" name="grade[]" type="text" class="form-control" value="'.$calificacion_rubros[$i++].'" required></input></div></td><td></td>';
 								}
 								$cadena .= '</tr>';
 								echo $cadena;
@@ -969,6 +985,10 @@ class courseCtrl {
 																"field" => $_POST['field'],
 																"grade" => $_POST['grade']);
 											$this -> mdl_obj -> save_calificacion_rubro($field_array['grade'][0],$field_array['field'],$field_array['studentid'],$_POST['nrc'].$_POST['ciclo']);
+											$student = $this -> mdl_obj -> get_email($_POST['studentid']);
+											$rubro = $this -> mdl_obj -> get_field_name($_POST['clave_rubro']);
+											$nombre_c = $this -> mdl_obj -> get_curso_name($_POST['nrc'].$_POST['ciclo']);
+											$this -> emailCtrl -> send_mail($this -> emailCtrl -> rubro_captured($student['nombre'],$rubro,$nombre_c) ,$student['correo'],$student['nombre'],'Captura de Califcacion');
 	 									}
 	 									else {
 	 										$clave_curso = $_POST['nrc'].$_POST['ciclo'];
@@ -982,6 +1002,10 @@ class courseCtrl {
 	 										$prom = $prom / sizeof($_POST['grade']);
 	 										$this -> mdl_obj -> save_promedio_evsheet($studentid,$clave_curso,$_POST['field'],$prom);
 	 										$this -> mdl_obj -> save_calificacion_rubro($prom,$_POST['field'],$studentid,$clave_curso);
+											$student = $this -> mdl_obj -> get_email($_POST['studentid']);
+											$rubro = $this -> mdl_obj -> get_field_name($_POST['field']);
+											$nombre_c = $this -> mdl_obj -> get_curso_name($_POST['nrc'].$_POST['ciclo']);
+											$this -> emailCtrl -> send_mail($this -> emailCtrl -> rubro_captured($student['nombre'],$rubro,$nombre_c) ,$student['correo'],$student['nombre'],'Captura de Califcacion');
 	 									}
 										$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
 										$rubros = $this -> mdl_obj -> std_obj -> get_rubros($_POST['nrc'].$_POST['ciclo']);

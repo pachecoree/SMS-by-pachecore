@@ -4,20 +4,42 @@
             {{'menu'}}
         </div>
     </section>
-    <form method="post" action="index.php?ctrl=cicle&act=add" class="form-horizontal" role="form">
+    <div class="container" id="mensaje_error"></div>
+    <form onsubmit="return validate();" method="post" action="index.php?ctrl=cicle&act=add" class="form-horizontal" role="form">
         <div class="container" id="contenedor_peq">
         <h2>Datos del Ciclo</h2>
         <table class="table">
             <tr>
-                <td colspan="1"><label for="ciclo"/>Ciclo</label><input type="text" class="form-control" id="ciclo" name="cicle"/></td>
+                <td colspan="1">
+                    <div class="form-group">
+                        <label for="ciclo"/>Ciclo</label>
+                        <input onkeyup="toUpper(this)" onblur="toUpper(this); validate_cicle(this);" type="text" class="form-control" id="ciclo" name="cicle" required autofocus/>
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td colspan="2"><label>Inicio de Curso</label> <input type="date" class="form-control" name="begindate" value="2000-01-01"/></td>
-                <td colspan="2"><label>Fin de Curso</label> <input type="date" class="form-control" name="enddate" value="2000-01-01"/></td>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label>Inicio de Curso</label>
+                        <input type="date" class="form-control" name="begindate" value="2000-01-01" id="begindate" required/>
+                    </div>
+                </td>
+                <td></td>
+                <td colspan="2">
+                    <div class="form-group">
+                        <label>Fin de Curso</label>
+                        <input onblur="validate_enddate(this)" type="date" class="form-control" name="enddate" value="2000-01-01" id="enddate" required/>
+                    </div>
+                </td>
             </tr>
             <tr id="ciclo_libres">
                 <td><label>Dias Libres</label> </td>
-                <td> <input type="date" class="form-control" name="nonworking[]" value="2000-01-01"/></td>
+                <td>
+                    <div class="form-group">
+                        <input onblur="validate_nonw(this)" type="date" class="form-control" name="nonworking[]" value="2000-01-01" required/>
+                    </div>
+                </td>
+                <td></td>
                 <td>
                     <button onClick="dias_libres_a()" type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
                     <button onClick="dias_libres_r(this)" type="button" class="btn btn-default btn-sm">
@@ -38,4 +60,7 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/match.js"></script>
+    
   </body>

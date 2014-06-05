@@ -6,7 +6,7 @@ class mailCtrl {
 		require('PHP/PHPMailerAutoload.php');
 	}
 
-	function send_mail($body,$adress,$name) {
+	function send_mail($body,$adress,$name,$subject) {
 		require('Models/phpmailer.inc');
 	  	$mail = new PHPMailer();
 		$mail->IsSMTP(); // Use SMTP
@@ -20,7 +20,7 @@ class mailCtrl {
 	    $mail->Priority    = 1; // Highest priority - Email priority (1 = High, 3 = Normal, 5 = low)
 	    $mail->CharSet     = 'UTF-8';
 	    $mail->Encoding    = '8bit';
-	    $mail->Subject     = 'Estatus Cambio';
+	    $mail->Subject     = $subject;
 	    $mail->ContentType = 'text/html; charset=utf-8\r\n';
 	    $mail->From        = 'administracion@SMS.co.nf';
 	    $mail->FromName    = 'Admnistracion';
@@ -30,17 +30,57 @@ class mailCtrl {
   		$mail->isHTML( TRUE );
   		$mail->Body    = $body;
  		$mail->AltBody = $body;
- 	 	$mail->Send();
+ 	 	//$mail->Send();
+ 	 	$mail->clearAddresses();
   		$mail->SmtpClose();
-
-		if(!$mail->send()) {
-		   //echo 'Message could not be sent.';
-		   //echo 'Mailer Error: ' . $mail->ErrorInfo;
-		   return;
-		}
-
-		echo 'Message has been sent';
 		return;
+	}
+
+	function status_change($nombre) {
+		$cadena = "
+			Saludos $nombre.</br>
+			Tu Estatus ha sido modificado!</br>
+
+			Si tiene alguna duda Favor de mandar correo electronico a administracion@SMS.co.nf.</br>
+
+			Este mensaje ha sido enviado automaticamente por el sistema Students Management System.
+		";
+		return $cadena;
+	}
+
+	function registration($nombre,$codigo,$pass) {
+		$cadena = "
+			Saludos $nombre.</br>
+			Tu cuenta ha sido creada!</br></br></br>
+			Para poder ingresar al Sistema de Alumnos ir a la direccion http://www.smsystem.co.nf </br>
+			Tus datos para ingresar son :</br>
+			<ul>
+				<li>
+					Codigo : $codigo
+				</li>
+				<li>
+					Contrasenha : $pass
+				</li>
+			</ul>
+			Se recomienda cambiar la Contrasenha al ingresar por primera vez.
+
+			Si tiene alguna duda Favor de mandar correo electronico a administracion@SMS.co.nf.</br>
+
+			Este mensaje ha sido enviado automaticamente por el sistema Students Management System.
+		";
+		return $cadena;
+	}
+
+	function rubro_captured($nombre,$rubro,$curso) {
+		$cadena = "
+			Saludos $nombre.</br>
+			Te han subido la calificacion de $rubro de tu curso de $curso!</br></br></br>
+			
+			Si tiene alguna duda Favor de mandar correo electronico a administracion@SMS.co.nf.</br>
+
+			Este mensaje ha sido enviado automaticamente por el sistema Students Management System.
+		";
+		return $cadena;
 	}
 
 }

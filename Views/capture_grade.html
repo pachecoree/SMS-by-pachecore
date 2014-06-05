@@ -47,9 +47,10 @@
 				</tr>
 			</table>
 		</div>
-	    <form id="form_calificaciones" method="post" action="index.php?ctrl=course&act=capture" class="form-horizontal" role="form">
+		<div class="container" id="mensaje_error"></div>
+		<form onsubmit="return validate();" id="form_calificaciones" method="post" action="index.php?ctrl=course&act=capture" class="form-horizontal" role="form">
 	    <div class="container" id="contenedor_med">
-	    	<table  class="table table-nonfluid table-responsive table-bordered" id="detalles_rubro">
+	    	<table  class="table table-nonfluid table-responsive" id="detalles_rubro">
 	    	</table>
 	    	<table class="table">
 	    		<tr>
@@ -61,7 +62,8 @@
 			    	<td></td>
 			    	<td></td>
 			    	<td></td>
-			  		<td><button type="submit" class="btn btn-primary btn-block">Guardar Calificaciones</button></td>
+			  		<td><button type="submit" class="btn btn-primary btn-block">Guardar</button></td>
+			  		<td><button onclick="regresar_viewcicle_c()" type="button" class="btn btn-primary btn-block">Cancelar</button></td>
 	    			<td></td>
 	    			<td></td>
 	    			<td></td>
@@ -76,4 +78,5 @@
 	    <script src="js/bootstrap.min.js"></script>
 	    <script type="text/javascript" src="js/scripts.js"></script>
 	    <script type="text/javascript" src="js/ajax.js"></script>
-	</body>
+		<script type="text/javascript" src="js/match.js"></script>
+	</body> 

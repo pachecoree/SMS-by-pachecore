@@ -98,21 +98,26 @@
 	}
 
 	function add_fields() {
+		var elementos_error = document.getElementsByName("error");
+    	if (elementos_error.length > 0) {
+    		$("#mensaje_error").html('<h3>Los Campos marcados no son validos!</h3>');
+    		return false;
+    	}
+
 		var elementos_porcentaje = document.getElementsByName("percentage[]");
 		var porcentaje = 0;
 		for(i=0; i < elementos_porcentaje.length; i++) { 
         	porcentaje += Number(elementos_porcentaje[i].value);
     	}
     	if (porcentaje < 100) {
+    		$('#mensaje_error').html('');
     		$("#h2rubros").html('<h3>El porcentaje no puede menor a 100</h3>');
     		return false;
     	}
     	else if (porcentaje > 100) {
+    		$('#mensaje_error').html('');
     		$("#h2rubros").html('<h3>El porcentaje no puede mayor a 100</h3>');
     		return false;
-    	}
-    	else {
-    		
     	}
 	}
 
@@ -140,7 +145,35 @@
 	function regresar_viewcicle() {
 		var form = document.getElementById("form");
 		form.setAttribute("action", "index.php?ctrl=course&act=viewcourse");
+		form.removeAttribute("onsubmit");
 		var nrc = document.getElementById("nrc");
 		var ciclo = document.getElementById("cicle");
 		form.submit();
+	}	
+
+	function regresar_viewcicle_c() {
+		var form = document.getElementById("form_calificaciones");
+		form.setAttribute("action", "index.php?ctrl=course&act=viewcourse");
+		form.removeAttribute("onsubmit");
+		var nrc = document.getElementById("nrc");
+		var ciclo = document.getElementById("cicle");
+		form.submit();
+	}
+
+	function regresar_viewcicle_a() {
+		var form = document.getElementById("form_asistencias");
+		form.setAttribute("action", "index.php?ctrl=course&act=viewcourse");
+		var nrc = document.getElementById("nrc");
+		var ciclo = document.getElementById("cicle");
+		form.submit();
+	}
+
+	function comparepass() {
+		var pass = document.getElementById("password").value;
+		var pass1 = document.getElementById("password1").value;
+		if (pass != pass1) {
+			$('#mensaje_error').html('<h3>Las Contrasenhas no coindicen</h3>');
+			return false;
+		}
+		//else return true;
 	}

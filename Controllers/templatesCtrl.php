@@ -184,6 +184,8 @@ class templatesCtrl {
 							<td>
 								<form method="post" action="index.php?ctrl=course&act=viewfields" class="form-horizontal" role="form">
 									<input type="hidden" name="clave_curso" value="'.$info_curso['nrc'].$info_curso['ciclo'].'"/>
+									<input type="hidden" name="nrc" value="'.$info_curso['nrc'].'"/>
+									<input type="hidden" name="ciclo" value="'.$info_curso['ciclo'].'"/>
 									<button class="btn btn-primary btn-block" type="submit">Ver Rubros</button>
 								</form>
 							</td>
@@ -226,6 +228,8 @@ class templatesCtrl {
 							$cadena .= '<form method="post" action="index.php?ctrl=course&act=viewfields" class="form-horizontal" role="form">
 								<td>
 									<input type="hidden" name="clave_curso" value="'.$info_curso['nrc'].$info_curso['ciclo'].'"/>
+									<input type="hidden" name="nrc" value="'.$info_curso['nrc'].'"/>
+									<input type="hidden" name="ciclo" value="'.$info_curso['ciclo'].'"/>
 									<button class="btn btn-primary btn-block" type="submit">Ver Rubros</button>
 								</td>
 							</form>';
@@ -373,7 +377,8 @@ class templatesCtrl {
 		}
 		$boton = '';
 		if ($band_ciclo && $_SESSION['type'] != 1){
-			$boton = '<button class="btn btn-primary btn-block" type="submit">Capturar Calificaciones</button>';
+			$boton = '<tr><td><button class="btn btn-primary btn-block" type="submit">Capturar</button></td>';
+			$boton .= '<td><button onclick="regresar_viewcicle_a()" class="btn btn-primary btn-block" type="button">Regresar</button></td></tr>';
 		}
 		$content = str_replace("{{'boton'}}", $boton,$content);
 		$content = str_replace("{{'nrc'}}", $subject_array['nrc'], $content);
@@ -385,7 +390,7 @@ class templatesCtrl {
 	}
 
 
-	function procesarPlantilla_course_listview($content,$students_array,$subject_array) {
+	function procesarPlantilla_course_listview($content,$students_array,$subject_array,$ciclo) {
 		$content = str_replace("{{'materia'}}" ,$subject_array['materia'],$content);
 		$content = str_replace("{{'nrc'}}" ,$subject_array['nrc'],$content);
 		$content = str_replace("{{'clave_materia'}}" ,$subject_array['clave_materia'],$content);
@@ -419,7 +424,8 @@ class templatesCtrl {
 				$cadena .= '</tr>';
 			}
 		}
-
+		$content = str_replace("{{'nrc'}}", $subject_array['nrc'], $content);
+		$content = str_replace("{{'ciclo'}}", $ciclo, $content);
 		$content = str_replace("{{'lista_alumnos'}}", $cadena, $content);
 		return $content;
 	}
@@ -485,7 +491,8 @@ class templatesCtrl {
 		}
 		$boton = '';
 		if ($band_ciclo && $_SESSION['type'] != 1) {
-			$boton = '<button class="btn btn-primary btn-block" type="submit">Guardar</button>';
+			$boton = '<tr><td><button class="btn btn-primary btn-block" type="submit">Guardar</button></td>';
+			$boton .= '<td><button onclick="regresar_viewcicle_a()" class="btn btn-primary btn-block" type="button">Regresar</button></td></tr>';
 		}
 		$content = str_replace("{{'boton'}}", $boton,$content);
 		$content = str_replace("{{'clave_curso'}}", $clave_curso, $content);
@@ -499,10 +506,14 @@ class templatesCtrl {
 		$menu = '<a href="index.php" class="btn btn-info"> Inicio</a> ';
 		if ($_SESSION['type'] == 1) {
 			$menu.= ' <div class="btn-group">
+					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Ciclo <span class="caret"></span></button>
+					  <ul class="dropdown-menu">
+					  <li><a href="?ctrl=cicle&act=view_cicle">Ver Ciclo</a></li>
+					  </ul></div>';
+			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Cursos <span class="caret"></span></button>
 					  <ul class="dropdown-menu">
 					  <li><a href="index.php?ctrl=student&act=list">Ver Cursos</a></li>
-					  <li><a href="">MENU 3</a></li>
 					  </ul></div>';
 			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Alumno <span class="caret"></span></button>
@@ -514,6 +525,11 @@ class templatesCtrl {
 		}
 		else if ($_SESSION['type'] == 2) {
 			$menu.= ' <div class="btn-group">
+					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Ciclo <span class="caret"></span></button>
+					  <ul class="dropdown-menu">
+					  <li><a href="?ctrl=cicle&act=view_cicle">Ver Ciclo</a></li>
+					  </ul></div>';
+			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Cursos <span class="caret"></span></button>
 					  <ul class="dropdown-menu">
 					  <li><a href="?ctrl=course&act=search">Buscar Curso</a></li>
@@ -524,8 +540,6 @@ class templatesCtrl {
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Profesor <span class="caret"></span></button>
 					  <ul class="dropdown-menu">
 					  <li><a href="index.php?act=changepwd&ctrl=login">Cambiar Contrasenha</a></li>
-					  <li><a href="">MENU 2</a></li>
-					  <li><a href="">MENU 3</a></li>
 					  </ul></div>';
 			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Alumno <span class="caret"></span></button>
@@ -539,7 +553,6 @@ class templatesCtrl {
 					  <ul class="dropdown-menu">
 					  <li><a href="?ctrl=cicle&act=new">Crear Ciclo</a></li>
 					  <li><a href="?ctrl=cicle&act=view_cicle">Ver Ciclo</a></li>
-					  <li><a href="">MENU 3</a></li>
 					  </ul></div>';
 			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Cursos <span class="caret"></span></button>
@@ -552,15 +565,12 @@ class templatesCtrl {
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Profesor <span class="caret"></span></button>
 					  <ul class="dropdown-menu">
 					  <li><a href="?ctrl=teacher&act=new">Agregar Maestro</a></li>
-					  <li><a href="">MENU 2</a></li>
-					  <li><a href="">MENU 3</a></li>
 					  </ul></div>';
 			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Alumno <span class="caret"></span></button>
 					  <ul class="dropdown-menu">
 					  <li><a href="?ctrl=student&act=new">Agregar Alumno</a></li>
 					  <li><a href="?ctrl=student&act=search">Buscar Alumno</a></li>
-					  <li><a href="">MENU 3</a></li>
 					  </ul></div>';
 			$menu.= ' <div class="btn-group">
 					  <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown"> Admin <span class="caret"></span></button>

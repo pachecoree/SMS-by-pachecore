@@ -4,7 +4,8 @@
             {{'menu'}}
         </div>
     </section>
-   	<form method="post" action="index.php?ctrl=course&act=clone" class="form-horizontal" role="form">
+    <div class="container" id="mensaje_error"></div>
+   	<form onsubmit="return validate();" method="post" action="index.php?ctrl=course&act=clone" class="form-horizontal" role="form">
 		<div class="container" id="contenedor_peq1">
 			<h3>Datos del Curso a Clonar</h3>
 	       	<table class="table table-responsive table-striped">
@@ -39,11 +40,11 @@
 	       	<table class="table table-responsive table-striped">
 	       		<tr>
 	       			<td>
-	       				<label for="nrc">NRC</label><input class="form-control" type="text" name="nrc" maxlength="5"></input>
+	       				<label for="nrc">NRC</label><input onblur="validate_nrc(this)" class="form-control" type="text" name="nrc" maxlength="5"></input>
 	       			</td>
 	       			<td>
 	       				<label for="section">Seccion</label>
-	       				<input onkeyup="toUpper(this)" class="form-control" type="text" name="section" maxlength="3"></input>
+	       				<input onkeyup="toUpper(this)" onblur="toUpper(this); validate_section(this);" class="form-control" type="text" name="section" maxlength="3"></input>
 	       			</td>
 	       		</tr>
 	            <tr>
@@ -73,5 +74,6 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/scripts.js"></script>
-    <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>    
+    <script type="text/javascript" src="js/match.js"></script>
 </body>

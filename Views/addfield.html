@@ -4,6 +4,7 @@
             {{'menu'}}
         </div>
     </section>
+    <div class="container" id="mensaje_error"></div>
     <form onsubmit="return add_fields();" id="form" method="post" action="index.php?ctrl=course&act=addfield" class="form-horizontal" role="form">
       <input type="hidden" value="{{'nrc'}}" name="nrc"/>
       <input type="hidden" value="{{'cicle'}}" name="ciclo"/>
@@ -27,7 +28,7 @@
           <tbody>
             <tr id="rubros" name="rubros">
               <td>
-                <input type="text" class="form-control" name="field[]" required></input>
+                <input onkeyup="toUpper(this)" onblur="toUpper(this); validate_field(this)" type="text" class="form-control" name="field[]" required></input>
               </td>
               <td>
                   <input type="number" class="form-control" min="1" max="100" value="1" name="percentage[]" required/>
@@ -64,7 +65,7 @@
       <table class="table">
         <tr>
           <th>
-            Recuerda que el porcetaje total debe ser 100 para poder guardar los rubros
+            Recuerda que el porcentaje total debe ser 100 para poder guardar los rubros
           </th>
         </tr>
       </table>
@@ -76,4 +77,5 @@
     <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/scripts.js"></script>
     <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/match.js"></script>
   </body>

@@ -60,6 +60,8 @@
 															$teacher = $this -> teacher_mdl -> std_obj -> add_teacher($teacher);
 															if (is_array($teacher)) {
 																#Get the View
+																$body = 'Tu Status ha sido Modificado , por favor revisa los cambios';
+																$this -> emailCtrl -> send_mail($this -> emailCtrl -> registration($teacher['nombre'],$teacher['codigo'],$pass),$teacher['correo'],$teacher['nombre'],'Registro de Usuario');
 																$footer = file_get_contents('Views/Footer.html');
 																$header = file_get_contents('Views/Head.html');
 																$content = file_get_contents('Views/teacherview.html');
@@ -69,7 +71,13 @@
 															}
 															else {
 																#Display the add error
-																$this -> errors -> error_add_student($_POST['first'].' '.$_POST['second'].' '. $_POST['name']);
+																$footer = file_get_contents('Views/Footer.html');
+																$header = file_get_contents('Views/Head.html');
+																$content = file_get_contents('Views/error.html');
+																$content = $this -> templateCtrl -> get_menu($content);
+																$mensaje = "No se pudo Agregar al Maestro ".$_POST['name'].' '.$_POST['first'].' '.$_POST['second'];
+																$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+																echo $header .$content.$footer;
 															}
 													}
 													else {
