@@ -65,7 +65,7 @@ class studentCtrl {
 										echo $cadena;
 									}
 									else {
-										//echo 'codigo no es valido';
+										echo '<tr><td>Codigo no es Valido</td></tr>';
 										return;
 									}
 								}
@@ -89,17 +89,17 @@ class studentCtrl {
 										echo $cadena;
 									}
 									else {
-										//echo 'nombre no es valido';
+										echo '<tr><td>Nombre no es Valido</td></tr>';
 										return;
 									}
 								}
 								else {
-									//echo 'error en la opcion';
+									echo '<tr><td>Error en la opcion seleccionada</td></tr>';
 									return;
 								}
 							}
 							else {
-								//echo 'no selected';
+								echo '<tr><td>No hay opcion seleccionada</td></tr>';
 							}
 						}
 						else if (isset($_POST['studentid'])) {
@@ -121,7 +121,13 @@ class studentCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 				break;
 
@@ -144,7 +150,13 @@ class studentCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 
@@ -165,7 +177,13 @@ class studentCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 				break;
 
@@ -188,7 +206,13 @@ class studentCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 
@@ -230,7 +254,13 @@ class studentCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 
@@ -382,7 +412,13 @@ class studentCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 				
@@ -420,7 +456,13 @@ class studentCtrl {
 									}
 									else {
 										#Could not modify Student Status
-										$this -> errors -> not_modify_student_status($_POST['studentid']);
+										$footer = file_get_contents('Views/Footer.html');
+										$header = file_get_contents('Views/Head.html');
+										$content = file_get_contents('Views/error.html');
+										$content = $this -> templateCtrl -> get_menu($content);
+										$mensaje = "Error! no se pudo modificar el estado del Alumno";
+										$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+										echo $header .$content.$footer;
 									}
 								}
 								else {
@@ -447,7 +489,13 @@ class studentCtrl {
 					}
 					else {
 						#User is not allowed to execute action
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 
@@ -589,7 +637,13 @@ class studentCtrl {
 					}
 					else {
 						#User is not allowed to execute action
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 

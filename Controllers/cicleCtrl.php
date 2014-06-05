@@ -41,7 +41,13 @@ class cicleCtrl{
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 				case 'add':
@@ -149,7 +155,13 @@ class cicleCtrl{
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 			case 'view_cicle' :
@@ -178,6 +190,15 @@ class cicleCtrl{
 					$content = file_get_contents('Views/login.html');
 					$content = $this -> templateCtrl -> procesarPlantilla_login($content,0);
 					echo $header.$content.$footer;
+				}
+				else  {
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 				}
 				break;
 			case 'modify':

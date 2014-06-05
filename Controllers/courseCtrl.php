@@ -48,14 +48,32 @@ class courseCtrl {
 										echo $header.$content.$footer;
 									}
 									else {
-										echo 'not found';
+										$footer = file_get_contents('Views/Footer.html');
+										$header = file_get_contents('Views/Head.html');
+										$content = file_get_contents('Views/error.html');
+										$content = $this -> templateCtrl -> get_menu($content);
+										$mensaje = "No se encontro el Curso";
+										$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+										echo $header .$content.$footer;
 									}
 								}
 								else 
-									echo 'nrc or ciclo are incorrect';
+									$footer = file_get_contents('Views/Footer.html');
+									$header = file_get_contents('Views/Head.html');
+									$content = file_get_contents('Views/error.html');
+									$content = $this -> templateCtrl -> get_menu($content);
+									$mensaje = "NRC o Ciclo son invalidos";
+									$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+									echo $header .$content.$footer;
 							}
 							else {
-								echo 'nrc or ciclo no were not found';
+								$footer = file_get_contents('Views/Footer.html');
+								$header = file_get_contents('Views/Head.html');
+								$content = file_get_contents('Views/error.html');
+								$content = $this -> templateCtrl -> get_menu($content);
+								$mensaje = "No se encontro NRC o Ciclo";
+								$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+								echo $header .$content.$footer;
 							}
 						}
 						else if ($session == false) {
@@ -66,7 +84,13 @@ class courseCtrl {
 							echo $header.$content.$footer;
 						}
 						else {
-							$this -> errors -> not_valid_usertype();
+							$footer = file_get_contents('Views/Footer.html');
+							$header = file_get_contents('Views/Head.html');
+							$content = file_get_contents('Views/error.html');
+							$content = $this -> templateCtrl -> get_menu($content);
+							$mensaje = "No tienes permisos para realizar esta accion";
+							$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+							echo $header .$content.$footer;
 						}
 					break;
 					case 'search':
@@ -103,9 +127,16 @@ class courseCtrl {
 							echo $header.$content.$footer;
 						}
 						else {
-							$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 						}
 						break;
+						
 					case 'new':
 						$session = $this -> validation -> active_session();
 						if ($session >= 2) {
@@ -137,7 +168,13 @@ class courseCtrl {
 							echo $header.$content.$footer;
 						}
 						else {
-							$this -> errors -> not_valid_usertype();
+							$footer = file_get_contents('Views/Footer.html');
+							$header = file_get_contents('Views/Head.html');
+							$content = file_get_contents('Views/error.html');
+							$content = $this -> templateCtrl -> get_menu($content);
+							$mensaje = "No tienes permisos para realizar esta accion";
+							$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+							echo $header .$content.$footer;
 						}
 						break;
 					case 'create':
@@ -269,7 +306,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 				case 'clone':
@@ -436,7 +479,13 @@ class courseCtrl {
 								echo $header.$content.$footer;
 							}
 							else {
-								$this -> errors -> not_valid_usertype();
+								$footer = file_get_contents('Views/Footer.html');
+								$header = file_get_contents('Views/Head.html');
+								$content = file_get_contents('Views/error.html');
+								$content = $this -> templateCtrl -> get_menu($content);
+								$mensaje = "No tienes permisos para realizar esta accion";
+								$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+								echo $header .$content.$footer;
 							}
 						}
 					break;
@@ -487,7 +536,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;;
 					}
 					break;
 
@@ -539,7 +594,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 
@@ -593,7 +654,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 					break;
 
@@ -684,7 +751,13 @@ class courseCtrl {
 							echo $header.$content.$footer;
 						}
 						else {
-							$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 						}
 					break;
 				case 'viewfields' :
@@ -712,7 +785,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
 				break;
 
@@ -804,7 +883,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
  					break;
 
@@ -915,7 +1000,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
  					break;	
 
@@ -1046,7 +1137,13 @@ class courseCtrl {
 						echo $header.$content.$footer;
 					}
 					else {
-						$this -> errors -> not_valid_usertype();
+						$footer = file_get_contents('Views/Footer.html');
+						$header = file_get_contents('Views/Head.html');
+						$content = file_get_contents('Views/error.html');
+						$content = $this -> templateCtrl -> get_menu($content);
+						$mensaje = "No tienes permisos para realizar esta accion";
+						$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
+						echo $header .$content.$footer;
 					}
  					break;
 
