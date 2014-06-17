@@ -9,16 +9,16 @@ Pagina Web :
 
 http://smsystem.co.nf/
 
-Acesso:
 
-Administrador.
-	Codigo:		78945
-	Password:	tortas
+Acceso: 
 
-Alumno
-	Codigo:		211213995
-	Password:	tortas
-
+Administrador. 
+  Codigo :  78945
+  Password: tortas
+  
+Alumno. 
+  Codigo :  211213995
+  Password: tortas
 
 Link para descargar la Documentacion :
 
