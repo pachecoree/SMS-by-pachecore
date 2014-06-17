@@ -17,8 +17,25 @@
   background-image: url(../img/footer.jpg);
   background-repeat: repeat-x;
   background-size: 100% 100%;
-  text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+ #logo_img {
+  height: 100%;
+ }
+
+ .fright {
+    float: right;
+    color: white;
+    
+ }
+
+ .fleft {
+  float: left;
+  color: white;
+ }
 
  #contenedor_larg {
   width: 100%;

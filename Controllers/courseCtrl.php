@@ -57,23 +57,12 @@ class courseCtrl {
 										echo $header .$content.$footer;
 									}
 								}
-								else 
-									$footer = file_get_contents('Views/Footer.html');
-									$header = file_get_contents('Views/Head.html');
-									$content = file_get_contents('Views/error.html');
-									$content = $this -> templateCtrl -> get_menu($content);
-									$mensaje = "NRC o Ciclo son invalidos";
-									$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
-									echo $header .$content.$footer;
+								else {
+
+								} 
+
 							}
 							else {
-								$footer = file_get_contents('Views/Footer.html');
-								$header = file_get_contents('Views/Head.html');
-								$content = file_get_contents('Views/error.html');
-								$content = $this -> templateCtrl -> get_menu($content);
-								$mensaje = "No se encontro NRC o Ciclo";
-								$content = str_replace("{{'mensaje-error'}}",$mensaje ,$content);
-								echo $header .$content.$footer;
 							}
 						}
 						else if ($session == false) {
@@ -154,7 +143,7 @@ class courseCtrl {
 							$materias = $this -> mdl_obj -> std_obj -> get_all_materias();
 							$dias = $this -> mdl_obj -> std_obj -> get_all_dias();
 							$horas = $this -> mdl_obj -> std_obj -> get_all_horas();
-							$content = str_replace("{{'select_maestros'}}", $this -> templateCtrl -> llena_select_maestros($teachers), $content);
+							$content = str_replace("{{'select_maestros'}}", $this -> templateCtrl -> llena_select_maestros_addcourse($teachers), $content);
 							$content = str_replace("{{'select_materia'}}", $this -> templateCtrl -> llena_select_materias($materias),$content);
 							$content = str_replace("{{'select_dia'}}", $this -> templateCtrl -> llena_select_dias($dias),$content);
 							$content = str_replace("{{'select_hora'}}", $this -> templateCtrl -> llena_select_horas($horas),$content);
@@ -622,7 +611,7 @@ class courseCtrl {
 								$ciclo = $this -> mdl_obj -> std_obj -> get_cicle();
 								$band_ciclo = false;
 								if ($ciclo == $_POST['ciclo']) $band_ciclo = true;
-								$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$ciclo);
+								$subject_array = $this -> mdl_obj -> std_obj -> obtener_curso($_POST['nrc'],$_POST['ciclo']);
 								$header = file_get_contents('Views/Head.html');
 								$content = file_get_contents('Views/grade_listview.html');
 								$footer = file_get_contents('Views/Footer.html');

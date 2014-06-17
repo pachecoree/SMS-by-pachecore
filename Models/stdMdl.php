@@ -65,7 +65,7 @@ class stdMdl {
 			}
 			$result -> close();
 		}
-		#Get the course's days (Days of the week course will be imparted)
+		#Get the courses days (Days of the week course will be imparted)
 		$statement = "SELECT clave_dia FROM Dias_curso WHERE clave_curso = '$clave_curso'";
 		$query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
@@ -649,7 +649,7 @@ class stdMdl {
 
 		#Check if Student ID is not already in DB
 		$statement = "SELECT userid FROM users_teacher WHERE userid = '$userid'";
-		$query = $this -> db_driver;
+                $query = $this -> db_driver;
 		if ($query -> real_query($statement)) {
 			if ($result = $query -> store_result()) {
 				if ($query = $result -> fetch_array(MYSQLI_ASSOC)) {
@@ -658,8 +658,6 @@ class stdMdl {
 			}
 			$result -> close();
 		}
-		else
-			return false;
 
 		#Add Student to System
 		$prepare = "INSERT INTO users_teacher VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -672,9 +670,8 @@ class stdMdl {
 		}
 
 		#Get values to create  array with all user information from database
-	    #
-		$return_array = $this -> buscar_maestro($userid);
-		if ($return_array == false)
+                $return_array = $this -> buscar_maestro($userid);
+                if ($return_array == false)
 			return false;
 		return $return_array;
 	}

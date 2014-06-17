@@ -51,6 +51,7 @@
 													if ($this -> validation -> validate_phonenumber($_POST['cellphone'])) {
 															#Fill Student array
 															$teacher['password'] = $this -> genera_password();
+															$pass =$teacher['password'];
 															$teacher['name'] = $_POST['name'];
 															$teacher['first'] = $_POST['first'];
 															$teacher['second'] = $_POST['second'];
@@ -58,7 +59,7 @@
 															$teacher['email'] = $_POST['email'];
 															$teacher['cellphone'] = $_POST['cellphone'];
 															$teacher = $this -> teacher_mdl -> std_obj -> add_teacher($teacher);
-															if (is_array($teacher)) {
+                                                                                                                        if (is_array($teacher)) {
 																#Get the View
 																$body = 'Tu Status ha sido Modificado , por favor revisa los cambios';
 																$this -> emailCtrl -> send_mail($this -> emailCtrl -> registration($teacher['nombre'],$teacher['codigo'],$pass),$teacher['correo'],$teacher['nombre'],'Registro de Usuario');

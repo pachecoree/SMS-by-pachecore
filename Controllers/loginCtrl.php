@@ -115,9 +115,9 @@
 									}
 									else
 										$content = file_get_contents('Views/logincorrectly.html');
-									//require('Views/loginCorrectly.php');
-									$content = $this-> templateCtrl -> get_menu($content);
-									echo $header . $content . $footer;
+										$content = str_replace("{{'nombre'}}", $_SESSION['user'], $content);
+										$content = $this-> templateCtrl -> get_menu($content);
+										echo $header . $content . $footer;
 								}
 								else {
 									//$this -> errors -> error_login_data();

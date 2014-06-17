@@ -24,7 +24,7 @@
             <tr>
                 <th>Materia</th>
                 <td colspan="2">  
-                    <select onchange="materia_select(this)" id="selmateria" name="subject" type="text" class="form-control">{{'select_materia'}}
+                    <select onchange="materia_select(this)" id="selmateria" name="subject" type="text" class="form-control" required>{{'select_materia'}}
                     </select>
                 </td>
                 <td><input onblur="materia_input(this)" onKeyUp="materia_input(this)" id="txtmateria" type="text" class="form-control" maxlength="5"/></td>
@@ -33,14 +33,14 @@
                 <th>NRC</th>
                 <td>
                     <div class="form-group">
-                        <input onblur="validate_nrc(this)" name="nrc" type="text" class="form-control" maxlength="5"/>
+                        <input onblur="validate_nrc(this)" name="nrc" type="text" class="form-control" maxlength="5" required/>
                     </div>
                 </td>
                 <td></td>
                 <th>Seccion</th>
                 <td>
                     <div class="form-group">
-                        <input onkeyup="toUpper(this)" onblur="toUpper(this); validate_section(this);" name="section" type="text" class="form-control" maxlength="3"/>
+                        <input onkeyup="toUpper(this)" onblur="toUpper(this); validate_section(this);" name="section" type="text" class="form-control" maxlength="3" required/>
                     </div>
                 </td>
             </tr>
@@ -49,11 +49,11 @@
             </tr>
             <tr id="horario" name="horario">
                     <th>Dia</th>
-                    <td> <select name="days[]" class="form-control"> {{'select_dia'}} </select> </td>
+                    <td> <select name="days[]" class="form-control" required> {{'select_dia'}} </select> </td>
                     <th>Horario</th>
-                    <td><select name="schedule[]" class="form-control"> {{'select_hora'}} </select></td>
+                    <td><select name="schedule[]" class="form-control" required> {{'select_hora'}} </select></td>
                     <th>Horas</th>
-                    <td><input type="number" name="hours[]" class="form-control" min="1" value="1"></td>
+                    <td><input type="number" name="hours[]" class="form-control" min="1" value="1" required></td>
                     <td>
                         <button onClick="horario_a()" type="button" class="btn btn-default btn-sm">
                             <span class="glyphicon glyphicon-plus"></span>

@@ -147,8 +147,8 @@ class templatesCtrl {
 			$content = str_replace("{{'inicia-horario'}}", '',$content);
 			$content = str_replace("{{'termina-horario'}}", '',$content);
 
-			if ($band_ciclo) {
-				if ($band_enrolled) {
+			//if ($band_ciclo) {
+                                if ($band_enrolled) {
 					if (!isset($rubros['actividad'])) {
 						$cadena = '
 						<table class="table">
@@ -237,10 +237,10 @@ class templatesCtrl {
 				}
 				$cadena .= '</tr></table>';
 				$content = str_replace("{{'opciones-curso'}}",$cadena, $content);
-			}
-			else {
-				$content = str_replace("{{'opciones-curso'}}",'',$content);
-			}
+                        //}
+			//else {
+                        //        $content = str_replace("{{'opciones-curso'}}",'',$content);
+			//}
 
 			return $content;
 		}
@@ -380,6 +380,7 @@ class templatesCtrl {
 			$boton = '<tr><td><button class="btn btn-primary btn-block" type="submit">Capturar</button></td>';
 			$boton .= '<td><button onclick="regresar_viewcicle_a()" class="btn btn-primary btn-block" type="button">Regresar</button></td></tr>';
 		}
+                else if ($_SESSION['type'] != 1) $boton .= '<td><button onclick="regresar_viewcicle_a()" class="btn btn-primary btn-block" type="button">Regresar</button></td></tr>';
 		$content = str_replace("{{'boton'}}", $boton,$content);
 		$content = str_replace("{{'nrc'}}", $subject_array['nrc'], $content);
 		$content = str_replace("{{'ciclo'}}", $ciclo, $content);
@@ -494,6 +495,7 @@ class templatesCtrl {
 			$boton = '<tr><td><button class="btn btn-primary btn-block" type="submit">Guardar</button></td>';
 			$boton .= '<td><button onclick="regresar_viewcicle_a()" class="btn btn-primary btn-block" type="button">Regresar</button></td></tr>';
 		}
+                else if ($_SESSION['type'] != 1) $boton .= '<td><button onclick="regresar_viewcicle_a()" class="btn btn-primary btn-block" type="button">Regresar</button></td></tr>';
 		$content = str_replace("{{'boton'}}", $boton,$content);
 		$content = str_replace("{{'clave_curso'}}", $clave_curso, $content);
 		$content = str_replace("{{'nrc'}}", $subject_array['nrc'], $content);
@@ -616,14 +618,31 @@ class templatesCtrl {
 		return $cadena;
 	}
 
-	function llena_select_maestros($teachers) {
+	function llena_select_maestros_addcourse($teachers) {
 		$cadena = "";
 		if (sizeof($teachers['clave']) == 1 ) {
 			while ((list( ,$clave) = each($teachers['clave'])) && (list( ,$nombre) = each($teachers['nombre'])))
 				$cadena .= $nombre.' <input type="hidden" id="selmaestro" name="teacher_id" value="'.$clave.'" />';
 		}
 		else {
-			$cadena .= '<select onchange="maestro_select(this); get_nrc();" id="selmaestro" name="teacher_id" type="text" class="form-control">';
+			$cadena .= '<select onchange="maestro_select(this);" id="selmaestro" name="teacher_id" type="text" class="form-control" required>';
+		while ((list( ,$clave) = each($teachers['clave'])) && (list( ,$nombre) = each($teachers['nombre']))) {
+			$cadena .= '<option value="'.$clave.'">'.$nombre.'</option>';
+			}
+			$cadena .= '</select>';
+			$cadena .= '</td><td><input onKeyUp="maestro_input(this)" onblur="maestro_input(this)" id="txtmaestro" type="text" class="form-control" maxlength="8"/>';
+		}
+		return $cadena;
+	}
+
+	function llena_select_maestros($teachers) {
+		$cadena = "";
+		if (sizeof($teachers['clave']) == 1 ) {
+			while ((list( ,$clave) = each($teachers['clave'])) && (list( ,$nombre) = each($teachers['nombre'])))
+				$cadena .= $nombre.' <input type="hidden" id="selmaestro" name="teacher_id" value="'.$clave.'"/>';
+		}
+		else {
+			$cadena .= '<select onchange="maestro_select(this); get_nrc();" id="selmaestro" name="teacher_id" type="text" class="form-control" required>';
 		while ((list( ,$clave) = each($teachers['clave'])) && (list( ,$nombre) = each($teachers['nombre']))) {
 			$cadena .= '<option value="'.$clave.'">'.$nombre.'</option>';
 			}

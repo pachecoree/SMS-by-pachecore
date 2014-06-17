@@ -74,6 +74,7 @@
 		}
 		else {
 			$content = file_get_contents('Views/logincorrectly.html');
+			$content = str_replace("{{'nombre'}}", $_SESSION['user'], $content);
 			$content = $templateCtrl -> get_menu($content);
 		}
 		echo $header.$content.$footer;

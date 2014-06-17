@@ -8,7 +8,7 @@ class teacherMdl {
 		$this -> std_obj = new stdMdl($driver);
 	}
 
-function add_student($student) {
+function add_teacher($teacher) {
 		$ciclo = $this -> std_obj -> get_cicle();
 		#Gets the student info
 		#Goes to the DB to add the student, and add the "Active" status

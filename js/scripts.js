@@ -106,11 +106,11 @@
 
 		var elementos_porcentaje = document.getElementsByName("percentage[]");
 		var porcentaje = 0;
-		for(i=0; i < elementos_porcentaje.length; i++) { 
+		for(i=0; i< elementos_porcentaje.length; i++) { 
         	porcentaje += Number(elementos_porcentaje[i].value);
     	}
     	if (porcentaje < 100) {
-    		$('#mensaje_error').html('');
+    		$('#mensaje_error').html(' ');
     		$("#h2rubros").html('<h3>El porcentaje no puede menor a 100</h3>');
     		return false;
     	}
